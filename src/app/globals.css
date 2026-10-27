@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+/*
+  デザインの基本方針（仕様 7）
+  - 文字は大きめ・行間広め（スマホで読みやすく）
+  - 本文とボタンのコントラストは WCAG AA 以上を目安
+  - タップ対象は 44px 以上
+*/
+@theme {
+  --color-brand-50: #eef6ff;
+  --color-brand-100: #d9ebff;
+  --color-brand-600: #1d6fd1;
+  --color-brand-700: #175aa9;
+  --color-brand-800: #134a8a;
+  --color-accent-500: #f59e0b;
+  --font-sans: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", Meiryo, system-ui, sans-serif;
+}
+
+html {
+  font-size: 17px;
+  line-height: 1.7;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  @apply bg-slate-50 text-slate-900 antialiased;
+}
+
+/* キーボード操作時のフォーカスをはっきり見せる（アクセシビリティ） */
+:focus-visible {
+  outline: 3px solid var(--color-accent-500);
+  outline-offset: 2px;
+}
+
+/* スクリーンリーダー専用テキスト */
+.sr-only-focusable:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
