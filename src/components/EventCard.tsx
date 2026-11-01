@@ -18,7 +18,13 @@ export function EventCard({ event, isSample = false }: { event: Event; isSample?
   const summary = event.description.split("\n")[0];
 
   return (
-    <article className="relative flex flex-col gap-2 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-brand-600 hover:shadow-md focus-within:border-brand-600">
+  <article className="relative flex h-full flex-col gap-3 rounded-sm border border-amber-200 bg-white p-5 pt-8 shadow-lg transition hover:-translate-y-1 hover:shadow-xl focus-within:ring-2 focus-within:ring-brand-600">
+
+    {/* チラシを留める画鋲 */}
+    <span
+      aria-hidden="true"
+      className="absolute left-1/2 top-2 z-10 h-4 w-4 -translate-x-1/2 rounded-full border-2 border-red-700 bg-red-500 shadow-md"
+    />
       <div className="flex flex-wrap items-center gap-2">
         {isSample && <Badge tone="warning">{t.sample.badge}</Badge>}
         <Badge tone="brand">{categoryLabel(event.category)}</Badge>

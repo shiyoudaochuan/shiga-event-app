@@ -1,0 +1,16 @@
+# Next.js
+.next/
+node_modules/
+out/
+
+# 環境変数
+.env*
+!.env.example
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# ローカルバックアップ
+src/app/page_.tsx
+src/app/page_ver1_10-31.tsx

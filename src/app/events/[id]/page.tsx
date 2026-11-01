@@ -39,10 +39,32 @@ export default async function EventDetailPage({ params }: { params: Params }) {
   const event = await getPublishedEventById(id);
   if (!event) notFound();
 
-  const isSample = currentDataSource() === "sample";
-  const registrationUrl = isSafeHttpUrl(event.registrationUrl) ? event.registrationUrl : null;
-  const sourceUrl = isSafeHttpUrl(event.sourceUrl) ? event.sourceUrl : null;
-  const organizerUrl = isSafeHttpUrl(event.organizer?.websiteUrl) ? event.organizer?.websiteUrl : null;
+ const isSample = currentDataSource() === "sample";
+
+ const registrationUrl = isSafeHttpUrl(event.registrationUrl)
+  ? event.registrationUrl
+  : null;
+
+ const sourceUrl = isSafeHttpUrl(event.sourceUrl)
+  ? event.sourceUrl
+  : null;
+
+  // 主催団体のWebサイトURLを取得
+  const organizerUrl = isSafeHttpUrl(event.organizer?.websiteUrl)
+  ? event.organizer?.websiteUrl
+  : null;
+
+  // 日本時間を基準に、イベント開催までの日数を計算する
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
+
+const eventStart = new Date(event.startAt).getTime();
+const now = Date.now();
+
+const daysUntil = Number.isFinite(eventStart)
+  ? Math.floor((eventStart + JST_OFFSET_MS) / DAY_MS)
+    - Math.floor((now + JST_OFFSET_MS) / DAY_MS)
+  : null;
 
   return (
     <article className="space-y-6">
@@ -61,6 +83,22 @@ export default async function EventDetailPage({ params }: { params: Params }) {
           {event.participationFee === 0 && <Badge tone="success">{t.common.free}</Badge>}
         </div>
         <h1 className="text-2xl font-bold leading-snug sm:text-3xl">{event.title}</h1>
+        {/* イベント開催までの残り日数 */}
+{daysUntil !== null && (
+  <div className="mt-3">
+
+    <p className="inline-block rounded-full bg-amber-100 px-4 py-2 text-sm font-bold text-amber-900">
+
+      {daysUntil > 0
+        ? `📅 開催まであと${daysUntil}日`
+        : daysUntil === 0
+          ? "🎉 本日開催！"
+          : "開催日を過ぎたイベントです"}
+
+    </p>
+
+  </div>
+)}
       </header>
 
       {/* 申込ボタンは最初に目に入る位置に置く（スマホで最重要の行動） */}
