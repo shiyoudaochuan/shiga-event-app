@@ -8,21 +8,33 @@ type EventListProps = {
   isSample: boolean;
 };
 
-export function EventList({ events, filtered, isSample }: EventListProps) {
+export function EventList({
+  events,
+  filtered,
+  isSample,
+}: EventListProps) {
   const t = getDictionary();
 
   return (
-    <section aria-label="イベント掲示板" className="w-full">
+    <section
+      aria-label="イベント掲示板"
+      className="w-full"
+    >
       {events.length === 0 ? (
         <div
           role="status"
           className="rounded-xl border border-dashed border-amber-500 bg-white px-6 py-10 text-center"
         >
           <p className="text-lg font-bold text-slate-900">
-            {filtered ? t.search.noResultTitle : t.search.noUpcomingTitle}
+            {filtered
+              ? t.search.noResultTitle
+              : t.search.noUpcomingTitle}
           </p>
+
           <p className="mt-2 text-slate-600">
-            {filtered ? t.search.noResultBody : t.search.noUpcomingBody}
+            {filtered
+              ? t.search.noResultBody
+              : t.search.noUpcomingBody}
           </p>
         </div>
       ) : (
@@ -30,15 +42,23 @@ export function EventList({ events, filtered, isSample }: EventListProps) {
           {events.map((event) => (
             <li
               key={event.id}
-              className="relative list-none rounded-md bg-white p-2 pt-7 shadow-md transition duration-200 odd:-rotate-1 even:rotate-1 hover:z-10 hover:rotate-0 hover:shadow-xl focus-within:z-10 focus-within:rotate-0"
+              className="relative list-none transition-transform duration-200 odd:-rotate-1 even:rotate-1 hover:z-10 hover:rotate-0 focus-within:z-10 focus-within:rotate-0"
             >
+              {/* 紙を留める画鋲 */}
               <span
                 aria-hidden="true"
                 className="pointer-events-none absolute left-1/2 top-2 z-10 h-4 w-4 -translate-x-1/2 rounded-full border border-red-700 bg-red-500 shadow-md"
               >
-                <span className="absolute left-1 top-0.5 h-1.5 w-1.5 rounded-full bg-white/70" />
+                <span
+                  className="absolute left-1 top-0.5 h-1.5 w-1.5 rounded-full bg-white/70"
+                />
               </span>
-              <EventCard event={event} isSample={isSample} />
+
+              {/* イベント情報を表示するカード */}
+              <EventCard
+                event={event}
+                isSample={isSample}
+              />
             </li>
           ))}
         </ul>

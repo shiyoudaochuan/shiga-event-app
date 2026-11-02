@@ -3,6 +3,7 @@ import { getDictionary } from "@/lib/i18n";
 import { getUpcomingEvents } from "@/lib/events/repository";
 import { EventList } from "@/components/EventList";
 import { SampleDataNotice } from "@/components/SampleDataNotice";
+import Link from "next/link";
 
 // 最新のイベント情報を取得するため、毎回サーバーで描画する
 export const dynamic = "force-dynamic";
@@ -39,6 +40,17 @@ export default async function HomePage() {
       </section>
 
       {/* サンプルデータの場合は注意書きを表示 */}
+      {/* イベント検索ボタン */}
+<div className="my-6 flex justify-end">
+  <Link
+    href="/search"
+    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-blue-700 px-6 py-3 font-semibold text-white shadow-sm transition hover:bg-blue-800"
+  >
+    <span aria-hidden="true">🔍</span>
+    イベントを検索
+    <span aria-hidden="true">→</span>
+  </Link>
+</div>
       {isSample && <SampleDataNotice />}
 
       {/* イベント掲示板 */}
