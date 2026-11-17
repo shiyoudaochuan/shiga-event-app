@@ -8,6 +8,8 @@ import { searchQuestions } from "@/config/guided-search";
 
 import { EventList } from "@/components/EventList";
 
+import { CorkBoard } from "@/components/CorkBoard";
+
 import { SampleDataNotice } from "@/components/SampleDataNotice";
 
 // ========================================
@@ -95,7 +97,7 @@ export default async function ResultsPage({
   // ========================================
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-10">
+    <div className="w-full py-2 sm:py-4">
 
       {/* 検索画面に戻る */}
 
@@ -108,7 +110,7 @@ export default async function ResultsPage({
 
       {/* ページタイトル */}
 
-      <header className="mb-8 mt-6">
+      <header className="glass animate-rise mb-6 mt-4 rounded-[var(--radius-lg)] px-5 py-6">
 
         <h1 className="text-3xl font-bold text-slate-900">
           イベント検索結果
@@ -142,7 +144,7 @@ export default async function ResultsPage({
       {/* おすすめ度の説明 */}
 
       {hasPurpose && results.length > 0 && (
-        <div className="mb-6 rounded-xl border border-blue-200 bg-blue-50 p-5">
+        <div className="glass mb-6 rounded-[var(--radius-lg)] p-5">
 
           <h2 className="font-bold text-blue-900">
             あなたの希望に近いイベント
@@ -165,15 +167,17 @@ export default async function ResultsPage({
 
       {results.length > 0 ? (
 
-        <EventList
-          events={results}
-          filtered={true}
-          isSample={isSample}
-        />
+        <CorkBoard>
+          <EventList
+            events={results}
+            filtered={true}
+            isSample={isSample}
+          />
+        </CorkBoard>
 
       ) : (
 
-        <section className="rounded-2xl bg-white p-8 text-center shadow-sm">
+        <section className="glass rounded-[var(--radius-lg)] p-8 text-center">
 
           <h2 className="text-xl font-bold text-slate-900">
             条件に合うイベントが見つかりませんでした
@@ -208,6 +212,6 @@ export default async function ResultsPage({
 
       </div>
 
-    </main>
+    </div>
   );
 }

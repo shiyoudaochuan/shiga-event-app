@@ -6,7 +6,7 @@ import { GuidedSearchForm } from "@/components/GuidedSearchform";
 
 // ページのメタデータ
 export const metadata: Metadata = {
-  title: "イベントを探す | しが つながるイベント",
+  title: "イベントを探す",
 
   description:
     "滋賀県の外国人住民向けイベントを、目的や地域などの条件から探すページです。",
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 // 検索ページ
 export default function SearchPage() {
   return (
-    <main className="min-h-screen bg-amber-50 px-4 py-10 sm:px-6">
+    <div className="py-2 sm:py-4">
 
       <div className="mx-auto max-w-5xl">
 
@@ -30,7 +30,7 @@ export default function SearchPage() {
 
         {/* ページタイトル */}
 
-        <header className="mb-10 mt-6 text-center">
+        <header className="glass animate-rise mb-8 mt-4 rounded-[var(--radius-lg)] px-5 py-7 text-center">
 
           <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">
             イベントを探す
@@ -53,6 +53,6 @@ export default function SearchPage() {
 
       </div>
 
-    </main>
+    </div>
   );
 }

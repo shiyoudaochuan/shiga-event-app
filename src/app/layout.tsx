@@ -22,12 +22,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   const t = getDictionary();
   return (
     <html lang="ja">
-      <body className="flex min-h-screen flex-col">
+      <body className="flex min-h-screen flex-col pb-24 lg:pb-0">
         <a href="#main" className="sr-only-focusable fixed left-2 top-2 z-50 rounded bg-white px-3 py-2 font-bold text-brand-800 shadow">
           {t.common.skipToContent}
         </a>
         <Header />
-        <main id="main" className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">
+        <main id="main" className="mx-auto w-full max-w-5xl flex-1 px-4 pb-8 pt-5 sm:pt-7">
           {children}
         </main>
         <Footer />

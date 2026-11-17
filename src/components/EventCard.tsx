@@ -26,7 +26,8 @@ export function EventCard({
 
   return (
     <article
-      className="relative flex h-full flex-col gap-3 rounded-sm border border-amber-200 bg-white p-5 pt-8 shadow-lg transition hover:shadow-xl focus-within:ring-2 focus-within:ring-brand-600"
+      // 枠線は付けない（コルクボード側の枠と二重にならないように）。紙の質感と影は .paper（globals.css）
+      className="paper relative flex h-full flex-col gap-3 rounded-sm p-5 pt-8 group-hover:[box-shadow:var(--paper-shadow-lift)] focus-within:ring-2 focus-within:ring-brand-600"
     >
       {/* イベントのカテゴリー・料金 */}
       <div className="flex flex-wrap items-center gap-2">

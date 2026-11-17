@@ -30,7 +30,7 @@ function QuestionField({
   return (
     <fieldset
       aria-describedby={`help-${question.id}`}
-      className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+      className="glass glass-strong rounded-2xl p-5"
     >
       <legend className="px-2 text-lg font-bold text-slate-900">
         {question.title}
@@ -232,7 +232,7 @@ export function GuidedSearchForm() {
 
         {/* 詳細検索 */}
 
-        <section className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+        <section className="glass rounded-2xl p-5">
 
           <button
             type="button"
@@ -279,7 +279,7 @@ export function GuidedSearchForm() {
 
         {/* 選択状況と操作ボタン */}
 
-        <section className="rounded-2xl bg-white p-6 shadow-sm">
+        <section className="glass glass-strong rounded-2xl p-6">
 
           <p
             aria-live="polite"
@@ -292,7 +292,7 @@ export function GuidedSearchForm() {
 
             <button
               type="submit"
-              className="min-h-12 flex-1 rounded-xl bg-blue-700 px-6 py-3 font-bold text-white transition-colors hover:bg-blue-800"
+              className="glass-btn-primary min-h-12 flex-1 rounded-xl"
             >
               選んだ条件を確認する
             </button>
@@ -316,7 +316,7 @@ export function GuidedSearchForm() {
       {showPreview && (
         <section
           role="status"
-          className="mt-8 rounded-2xl border border-blue-200 bg-blue-50 p-6"
+          className="glass mt-8 rounded-2xl p-6"
         >
           <h2 className="text-xl font-bold text-blue-900">
             選択した検索条件
