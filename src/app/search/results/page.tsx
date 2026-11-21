@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import Link from "next/link";
 
 import { getUpcomingEvents } from "@/lib/events/repository";
@@ -103,24 +104,24 @@ export default async function ResultsPage({
 
       <Link
         href="/search"
-        className="inline-flex min-h-11 items-center font-medium text-blue-800 hover:underline"
+        className="btn btn-sm"
       >
         ← 検索条件を変更する
       </Link>
 
       {/* ページタイトル */}
 
-      <header className="glass animate-rise mb-6 mt-4 rounded-[var(--radius-lg)] px-5 py-6">
+      <header className="surface animate-pop mb-8 mt-5 px-5 py-6" style={{ "--surface-bg": "#e3ecff", "--surface-shadow": "var(--color-sky)" } as CSSProperties}>
 
-        <h1 className="text-3xl font-bold text-slate-900">
+        <h1 className="text-3xl font-extrabold">
           イベント検索結果
         </h1>
 
-        <p className="mt-3 text-slate-600">
+        <p className="mt-3 text-ink-soft">
           検索条件に合うイベントを表示しています。
         </p>
 
-        <p className="mt-4 text-lg font-semibold text-blue-800">
+        <p className="mt-4 inline-block rounded-full border-[2.5px] border-ink bg-sun px-4 py-1 text-lg font-extrabold shadow-[3px_3px_0_var(--color-ink)]">
           {results.length}件のイベントが見つかりました
         </p>
 
@@ -133,7 +134,7 @@ export default async function ResultsPage({
       {/* 未対応の検索条件について */}
 
       {hasPendingConditions && (
-        <div className="my-6 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-950">
+        <div className="my-6 rounded-[var(--radius-md)] border-2 border-dashed border-ink bg-white p-4 text-sm font-medium">
           「交流したい相手」「参加しやすさ」の条件は、
           現在のイベントデータでは確認できないため、
           検索結果への反映を保留しています。
@@ -144,18 +145,18 @@ export default async function ResultsPage({
       {/* おすすめ度の説明 */}
 
       {hasPurpose && results.length > 0 && (
-        <div className="glass mb-6 rounded-[var(--radius-lg)] p-5">
+        <div className="surface mb-8 p-5" style={{ "--surface-bg": "#fff3c4", "--surface-shadow": "var(--color-sun)" } as CSSProperties}>
 
-          <h2 className="font-bold text-blue-900">
+          <h2 className="font-extrabold">
             あなたの希望に近いイベント
           </h2>
 
-          <p className="mt-2 text-sm text-slate-700">
+          <p className="mt-2 text-sm text-ink">
             {matchedCount}件のイベントに、
             参加目的と関連するキーワードが見つかりました。
           </p>
 
-          <p className="mt-2 text-sm text-slate-600">
+          <p className="mt-2 text-sm text-ink-soft">
             キーワードとの関連性をもとに並べています。
             関連性が低いイベントも候補として表示する場合があります。
           </p>
@@ -177,20 +178,20 @@ export default async function ResultsPage({
 
       ) : (
 
-        <section className="glass rounded-[var(--radius-lg)] p-8 text-center">
+        <section className="surface p-8 text-center">
 
-          <h2 className="text-xl font-bold text-slate-900">
+          <h2 className="text-xl font-extrabold">
             条件に合うイベントが見つかりませんでした
           </h2>
 
-          <p className="mt-3 text-slate-600">
+          <p className="mt-3 text-ink-soft">
             地域・日時・料金・言語などの条件を
             変更して再度検索してください。
           </p>
 
           <Link
             href="/search"
-            className="mt-6 inline-flex rounded-xl bg-blue-700 px-6 py-3 font-semibold text-white hover:bg-blue-800"
+            className="btn btn-primary mt-6"
           >
             検索条件を変更する
           </Link>
@@ -205,7 +206,7 @@ export default async function ResultsPage({
 
         <Link
           href="/"
-          className="font-medium text-blue-800 hover:underline"
+          className="btn"
         >
           ← イベント掲示板に戻る
         </Link>

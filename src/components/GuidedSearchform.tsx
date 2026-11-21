@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 
-import { useState, type FormEvent } from "react";
+import { useState, type CSSProperties, type FormEvent } from "react";
 
 import {
   searchQuestions,
@@ -30,15 +30,15 @@ function QuestionField({
   return (
     <fieldset
       aria-describedby={`help-${question.id}`}
-      className="glass glass-strong rounded-2xl p-5"
+      className="surface p-5"
     >
-      <legend className="px-2 text-lg font-bold text-slate-900">
+      <legend className="px-2 text-lg font-extrabold">
         {question.title}
       </legend>
 
       <p
         id={`help-${question.id}`}
-        className="mb-5 text-sm text-slate-600"
+        className="mb-5 text-sm text-ink-soft"
       >
         {question.description}
       </p>
@@ -52,13 +52,13 @@ function QuestionField({
               key={option.value}
               className={`
                 flex min-h-12 cursor-pointer items-center
-                gap-3 rounded-xl border p-4
+                gap-3 rounded-2xl p-4 font-bold
                 transition-colors
 
                 ${
                   checked
-                    ? "border-blue-600 bg-blue-50 text-blue-900"
-                    : "border-slate-200 bg-white text-slate-800 hover:bg-slate-50"
+                    ? "border-2 border-ink bg-sun shadow-[3px_3px_0_var(--color-ink)]"
+                    : "border-2 border-ink/25 bg-white hover:border-ink"
                 }
               `}
             >
@@ -74,7 +74,7 @@ function QuestionField({
                 onChange={() =>
                   onToggle(question, option.value)
                 }
-                className="h-5 w-5 shrink-0 accent-blue-700"
+                className="h-5 w-5 shrink-0 accent-[#2a2140]"
               />
 
               <span className="text-sm font-medium">
@@ -209,11 +209,11 @@ export function GuidedSearchForm() {
         <section className="space-y-5">
 
           <div>
-            <h2 className="text-xl font-bold text-slate-900">
+            <h2 className="text-2xl font-extrabold">
               基本の質問
             </h2>
 
-            <p className="mt-2 text-sm text-slate-600">
+            <p className="mt-2 text-sm text-ink-soft">
               希望する条件を選んでください。
               すべて回答する必要はありません。
             </p>
@@ -232,7 +232,7 @@ export function GuidedSearchForm() {
 
         {/* 詳細検索 */}
 
-        <section className="glass rounded-2xl p-5">
+        <section className="surface p-5" style={{ "--surface-bg": "#e3ecff", "--surface-shadow": "var(--color-sky)" } as CSSProperties}>
 
           <button
             type="button"
@@ -241,7 +241,7 @@ export function GuidedSearchForm() {
             onClick={() =>
               setShowAdvanced((previous) => !previous)
             }
-            className="flex min-h-12 w-full items-center justify-between gap-3 text-left font-bold text-blue-800"
+            className="flex min-h-12 w-full items-center justify-between gap-3 text-left font-extrabold"
           >
             <span>
               {showAdvanced
@@ -256,7 +256,7 @@ export function GuidedSearchForm() {
           <button
             type="button"
             onClick={() => setShowPreview(true)}
-            className="min-h-12 rounded-xl border border-blue-300 px-6 py-3 font-medium text-blue-800 hover:bg-blue-50">
+            className="btn mt-2">
   条件を確認
             </button>
 
@@ -279,11 +279,11 @@ export function GuidedSearchForm() {
 
         {/* 選択状況と操作ボタン */}
 
-        <section className="glass glass-strong rounded-2xl p-6">
+        <section className="surface p-6">
 
           <p
             aria-live="polite"
-            className="mb-4 text-center text-sm text-slate-600"
+            className="mb-4 text-center text-sm text-ink-soft"
           >
             現在 {selectedCount} 個の条件を選択しています
           </p>
@@ -292,7 +292,7 @@ export function GuidedSearchForm() {
 
             <button
               type="submit"
-              className="glass-btn-primary min-h-12 flex-1 rounded-xl"
+              className="btn btn-primary flex-1"
             >
               選んだ条件を確認する
             </button>
@@ -300,7 +300,7 @@ export function GuidedSearchForm() {
             <button
               type="button"
               onClick={clearAnswers}
-              className="min-h-12 rounded-xl border border-slate-300 px-6 py-3 font-medium text-slate-700 hover:bg-slate-50"
+              className="btn"
             >
               すべてクリア
             </button>
@@ -316,9 +316,9 @@ export function GuidedSearchForm() {
       {showPreview && (
         <section
           role="status"
-          className="glass mt-8 rounded-2xl p-6"
+          className="surface mt-8 p-6"
         >
-          <h2 className="text-xl font-bold text-blue-900">
+          <h2 className="text-xl font-extrabold">
             選択した検索条件
           </h2>
 
@@ -328,7 +328,7 @@ export function GuidedSearchForm() {
               {selectedLabels.map((label, index) => (
                 <span
                   key={`${label}-${index}`}
-                  className="rounded-full border border-blue-200 bg-white px-4 py-2 text-sm font-medium text-blue-900"
+                  className="tag px-3 py-1 text-sm"
                 >
                   {label}
                 </span>
@@ -336,12 +336,12 @@ export function GuidedSearchForm() {
 
             </div>
           ) : (
-            <p className="mt-4 text-sm text-slate-700">
+            <p className="mt-4 text-sm text-ink">
               条件は選択されていません。
             </p>
           )}
 
-          <p className="mt-5 text-sm text-slate-600">
+          <p className="mt-5 text-sm text-ink-soft">
             現在は検索条件を確認する段階です。
             次の開発STEPで、実際のイベント検索とおすすめ表示を接続します。
           </p>

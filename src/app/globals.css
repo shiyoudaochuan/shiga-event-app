@@ -6,103 +6,86 @@
   - 本文とボタンのコントラストは WCAG AA 以上を目安
   - タップ対象は 44px 以上
 
-  2026-11-17 追加：Modern Bulletin Board × Glassmorphism
-  - 中央の「コルクボード＋紙のチラシ」はアナログのまま残す
-  - 周囲（ナビ・操作ボタン・設定パネル）だけを半透明のガラスにする
+  2026-11-21 採用：Design C「Playful Community（つながるパーク）」
+  - 公民館の掲示板に、いろんな国の人が色とりどりの紙を貼っていくイメージ
+  - 太い輪郭線 × ずらした影（やわらかい立体）× 弾む操作感
   - 値はすべて下の CSS 変数に集約。見た目の調整はここを書き換えるだけで済む
 */
 @theme {
-  --color-brand-50: #eef6ff;
-  --color-brand-100: #d9ebff;
-  --color-brand-600: #1d6fd1;
-  --color-brand-700: #175aa9;
-  --color-brand-800: #134a8a;
-  --color-accent-500: #f59e0b;
-  --font-sans: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", Meiryo, system-ui, sans-serif;
+  /* 既存コンポーネントとの互換のため brand / accent 系の名前は残す */
+  --color-brand-50: #eef4ff;
+  --color-brand-100: #dbe7ff;
+  --color-brand-600: #2f6fe0;
+  --color-brand-700: #2457b8;
+  --color-brand-800: #1d468f;
+  --color-accent-500: #ffc93c;
+
+  /* Design C のパレット（Tailwind の bg-sun / text-ink などとしても使える） */
+  --color-ink: #2a2140; /* 輪郭線と本文。黒より柔らかいぶどう色 */
+  --color-ink-soft: #574c70; /* 補足文。クリーム地で 7:1 */
+  --color-cream: #fff7e8;
+  --color-sun: #ffc93c;
+  --color-coral: #ff6f59;
+  --color-mint: #2ec4a6;
+  --color-sky: #4f8ff7;
+  --color-grape: #8a6cff;
+  --color-pink: #ff9ec7;
+
+  /* layout.tsx で next/font が読み込んだ書体を変数経由で使う */
+  --font-sans: var(--font-rounded), "Hiragino Maru Gothic ProN", "Hiragino Sans", "Yu Gothic", Meiryo, system-ui, sans-serif;
+  --font-display: var(--font-fredoka), var(--font-rounded), system-ui, sans-serif;
 }
 
 /* ------------------------------------------------------------
-   デザイントークン（Glassmorphism 用）
+   デザイントークン
    ------------------------------------------------------------ */
 :root {
-  /* 背景：琵琶湖の朝をイメージした淡い青 → 温かいクリーム */
-  --bg-top: #e8f1fb;
-  --bg-mid: #f4f1ea;
-  --bg-bottom: #fbf3e4;
-  --glow-blue: rgb(96 165 250 / 0.35);
-  --glow-amber: rgb(251 191 36 / 0.28);
-  --glow-teal: rgb(45 212 191 / 0.2);
+  --line-w: 2.5px;
+  --line: var(--line-w) solid var(--color-ink);
+  --shadow-sm: 3px 3px 0 var(--color-ink);
+  --shadow-md: 5px 5px 0 var(--color-ink);
+  --shadow-lg: 8px 8px 0 var(--color-ink);
 
-  /* 文字色 */
-  --text-strong: #0f172a; /* slate-900 */
-  --text-body: #334155; /* slate-700 */
-  --text-muted: #475569; /* slate-600：白ガラス上でも AA を満たす */
+  /* チラシの紙色（カテゴリごとに config/category-colors.ts で上書き） */
+  --paper-default: #ffffff;
 
-  /* ガラス：透明度は「文字が読める」ことを優先して 0.6〜0.75 に抑える */
-  --glass-bg: rgb(255 255 255 / 0.62);
-  --glass-bg-strong: rgb(255 255 255 / 0.78);
-  --glass-bg-hover: rgb(255 255 255 / 0.85);
-  --glass-border: rgb(255 255 255 / 0.75);
-  --glass-edge: rgb(15 23 42 / 0.08); /* 外側のごく薄い輪郭（明るい背景でも縁が見える） */
-  --glass-highlight: rgb(255 255 255 / 0.9); /* 上辺の光の反射 */
-  --glass-blur: 18px;
-  --glass-saturate: 160%;
-  --glass-shadow: 0 1px 2px rgb(15 23 42 / 0.06), 0 8px 24px -6px rgb(15 23 42 / 0.14);
-  --glass-shadow-lift: 0 2px 4px rgb(15 23 42 / 0.08), 0 16px 36px -8px rgb(15 23 42 / 0.22);
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
 
-  /* 掲示板 */
-  --cork: #c79a62;
-  --cork-dark: #a77a45;
-  --frame-wood: #7c4a22;
-  --paper: #fffdf7;
-  --paper-shadow: 0 1px 1px rgb(60 35 10 / 0.18), 0 6px 14px -4px rgb(60 35 10 / 0.35);
-  --paper-shadow-lift: 0 2px 3px rgb(60 35 10 / 0.18), 0 18px 30px -10px rgb(60 35 10 / 0.45);
-
-  /* 角丸 */
-  --radius-sm: 0.5rem;
-  --radius-md: 0.875rem;
-  --radius-lg: 1.25rem;
-  --radius-xl: 1.75rem;
-
-  /* アニメーション時間 */
-  --dur-fast: 150ms;
+  --dur-fast: 160ms;
   --dur-base: 240ms;
-  --dur-slow: 420ms;
+  --dur-slow: 600ms;
+  /* 少し行き過ぎて戻る「ぽよん」とした動き */
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 html {
+  overflow-x: clip;
   font-size: 17px;
   line-height: 1.7;
   -webkit-text-size-adjust: 100%;
 }
 
 body {
-  @apply text-slate-900 antialiased;
-  /* グラデーション背景（ガラスの「透けて見える奥行き」を作るための下地） */
-  background-color: var(--bg-mid);
-  background-image: linear-gradient(170deg, var(--bg-top) 0%, var(--bg-mid) 45%, var(--bg-bottom) 100%);
-  background-attachment: fixed;
-  overflow-x: hidden;
-}
-
-/* 柔らかな光の玉。position: fixed の疑似要素なので、スクロールしても再計算されず軽い */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    radial-gradient(38rem 28rem at 8% -4%, var(--glow-blue), transparent 70%),
-    radial-gradient(30rem 24rem at 100% 18%, var(--glow-amber), transparent 70%),
-    radial-gradient(34rem 26rem at 40% 110%, var(--glow-teal), transparent 70%);
+  color: var(--color-ink);
+  background-color: var(--color-cream);
+  /* 水玉の地紋。画像ファイル不要 */
+  background-image: radial-gradient(rgb(42 33 64 / 0.07) 1.5px, transparent 1.6px);
+  background-size: 22px 22px;
+  /* 傾けたチラシや重ねたカードが端からはみ出しても、横スクロールさせない。
+     hidden ではなく clip にすると、スクロール領域を作らないので sticky 等にも影響しない */
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "palt";
 }
 
 /* キーボード操作時のフォーカスをはっきり見せる（アクセシビリティ） */
 :focus-visible {
-  outline: 3px solid var(--color-accent-500);
-  outline-offset: 2px;
+  outline: 3px solid var(--color-sky);
+  outline-offset: 3px;
 }
 
 /* スクリーンリーダー専用テキスト */
@@ -120,181 +103,294 @@ body::before {
 
 /* ------------------------------------------------------------
    再利用クラス（components レイヤー）
-   Tailwind のユーティリティ（p-4 など）の方が後に適用されるので、
+   Tailwind のユーティリティ（p-4 / absolute など）の方が後に適用されるので、
    個別の調整は className に Tailwind を足すだけで上書きできる
    ------------------------------------------------------------ */
 @layer components {
-  /* ガラスの板。背景・ぼかし・縁・影・上辺の反射をまとめたもの */
-  .glass {
+  /* 太い輪郭線とずらした影の「板」。影の色は --surface-shadow で変えられる */
+  .surface {
     position: relative;
-    background: var(--glass-bg);
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-    border: 1px solid var(--glass-border);
-    box-shadow:
-      inset 0 1px 0 var(--glass-highlight),
-      0 0 0 1px var(--glass-edge),
-      var(--glass-shadow);
-  }
-
-  .glass-strong {
-    background: var(--glass-bg-strong);
-  }
-
-  /* backdrop-filter 非対応ブラウザでは不透明度を上げて読みやすさを確保 */
-  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    .glass {
-      background: rgb(255 255 255 / 0.94);
-    }
-  }
-
-  /* ガラスのボタン。ホバーで少し浮き上がる。
-     Tailwind v4 の @apply は自作クラスを展開できないため、
-     マークアップでは className="glass glass-btn" と 2 つ並べて使う */
-  .glass-btn {
-    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-5 font-semibold text-slate-800;
-    transition:
-      transform var(--dur-fast) var(--ease-out),
-      box-shadow var(--dur-base) var(--ease-out),
-      background-color var(--dur-base) var(--ease-out);
-  }
-  .glass-btn:hover {
-    background: var(--glass-bg-hover);
-    transform: translateY(-2px);
-    box-shadow:
-      inset 0 1px 0 var(--glass-highlight),
-      0 0 0 1px var(--glass-edge),
-      var(--glass-shadow-lift);
-  }
-  .glass-btn:active {
-    transform: translateY(0) scale(0.98);
-  }
-
-  /* 主要アクション用：色付きガラス（白文字のコントラストを保つため不透明度は高め） */
-  .glass-btn-primary {
-    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 font-bold text-white;
-    background: linear-gradient(135deg, rgb(29 111 209 / 0.94), rgb(19 74 138 / 0.94));
-    border: 1px solid rgb(255 255 255 / 0.35);
-    box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 0.35),
-      0 8px 20px -6px rgb(29 111 209 / 0.55);
-    transition:
-      transform var(--dur-fast) var(--ease-out),
-      box-shadow var(--dur-base) var(--ease-out),
-      filter var(--dur-base) var(--ease-out);
-  }
-  .glass-btn-primary:hover {
-    transform: translateY(-2px);
-    filter: brightness(1.06);
-    box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 0.35),
-      0 14px 28px -8px rgb(29 111 209 / 0.6);
-  }
-  .glass-btn-primary:active {
-    transform: translateY(0) scale(0.98);
-  }
-
-  /* 選択式の「チップ」（発見モードの設定画面などで使う） */
-  .glass-chip {
-    @apply relative inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full px-4 text-sm font-semibold text-slate-800 select-none;
-    background: rgb(255 255 255 / 0.55);
-    border: 1px solid rgb(255 255 255 / 0.8);
-    box-shadow: 0 0 0 1px var(--glass-edge);
-    transition:
-      background-color var(--dur-fast) ease,
-      box-shadow var(--dur-fast) ease,
-      transform var(--dur-fast) ease;
-  }
-  .glass-chip:hover {
-    background: rgb(255 255 255 / 0.85);
-  }
-  .glass-chip:has(input:checked) {
-    background: rgb(219 234 254 / 0.95);
-    color: var(--color-brand-800);
-    box-shadow: 0 0 0 2px var(--color-brand-600);
-  }
-  .glass-chip:has(input:focus-visible) {
-    outline: 3px solid var(--color-accent-500);
-    outline-offset: 2px;
-  }
-
-  /* ------------------------------------------------------------
-     コルクボード。枠は「ここ 1 か所」だけ（二重枠を再発させないため、
-     EventList / EventCard 側には枠を付けない）
-     ------------------------------------------------------------ */
-  .cork-board {
-    position: relative;
+    background: var(--surface-bg, #fff);
+    border: var(--line);
     border-radius: var(--radius-lg);
-    padding: 1.75rem 1rem 2rem;
-    background-color: var(--cork);
-    /* 細かい粒（コルクの気泡）を radial-gradient の繰り返しで表現。画像ファイル不要 */
-    background-image:
-      radial-gradient(circle at 20% 30%, rgb(120 70 30 / 0.28) 0 1px, transparent 1.6px),
-      radial-gradient(circle at 70% 60%, rgb(255 240 210 / 0.25) 0 1px, transparent 1.8px),
-      radial-gradient(circle at 40% 80%, rgb(110 60 20 / 0.22) 0 1.2px, transparent 2px),
-      linear-gradient(160deg, rgb(255 255 255 / 0.08), rgb(0 0 0 / 0.08));
-    background-size: 13px 13px, 17px 17px, 23px 23px, 100% 100%;
-    border: 10px solid var(--frame-wood);
-    box-shadow:
-      inset 0 2px 10px rgb(60 30 5 / 0.45),
-      0 1px 0 rgb(255 255 255 / 0.4),
-      0 18px 40px -16px rgb(60 30 5 / 0.45);
+    box-shadow: 5px 5px 0 var(--surface-shadow, var(--color-ink));
   }
-  @media (min-width: 640px) {
-    .cork-board {
-      padding: 2.25rem 2rem 2.5rem;
-      border-width: 14px;
-    }
-  }
-
-  /* 紙のチラシ */
-  .paper {
-    background: var(--paper);
-    background-image: linear-gradient(180deg, rgb(255 255 255 / 0.9), rgb(250 244 230 / 0.6));
-    box-shadow: var(--paper-shadow);
+  /* リンクになっている板：ホバーで浮き、押すと沈む */
+  .surface-link {
     transition:
-      box-shadow var(--dur-base) var(--ease-out),
-      transform var(--dur-base) var(--ease-out);
+      transform var(--dur-base) var(--ease-pop),
+      box-shadow var(--dur-base) var(--ease-pop);
+  }
+  .surface-link:hover {
+    transform: translate(-3px, -3px) rotate(var(--hover-rot, -0.5deg));
+    box-shadow: 9px 9px 0 var(--surface-shadow, var(--color-ink));
+  }
+  .surface-link:active {
+    transform: translate(3px, 3px);
+    box-shadow: 1px 1px 0 var(--surface-shadow, var(--color-ink));
   }
 
-  /* 画鋲。EventList の <li> にだけ置く（EventCard 側には置かない＝二重画鋲防止） */
-  .push-pin {
-    position: absolute;
-    left: 50%;
-    top: 0.5rem;
-    z-index: 10;
-    width: 1.1rem;
-    height: 1.1rem;
-    transform: translateX(-50%);
-    border-radius: 9999px;
-    background: radial-gradient(circle at 35% 30%, #fca5a5 0 18%, #ef4444 40%, #b91c1c 100%);
-    box-shadow:
-      0 2px 3px rgb(0 0 0 / 0.35),
-      2px 4px 6px -2px rgb(0 0 0 / 0.3);
+  /* ボタン */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 3rem;
+    padding: 0 1.4rem;
+    border: var(--line);
+    border-radius: 999px;
+    font-weight: 800;
+    white-space: nowrap;
+    color: var(--color-ink);
+    background: var(--btn-bg, #fff);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition:
+      transform var(--dur-fast) var(--ease-pop),
+      box-shadow var(--dur-fast) var(--ease-pop),
+      background-color var(--dur-fast);
+  }
+  .btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 var(--color-ink);
+  }
+  .btn:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 var(--color-ink);
+  }
+  .btn:disabled {
+    opacity: 0.45;
+    pointer-events: none;
+  }
+  /* 主要アクション：ひまわり色。文字はぶどう色（白文字より読みやすい） */
+  .btn-primary {
+    --btn-bg: var(--color-sun);
+  }
+  .btn-accent {
+    --btn-bg: var(--color-coral);
+  }
+  .btn-sm {
+    min-height: 2.75rem;
+    padding: 0 1rem;
+    font-size: 0.9rem;
+  }
+
+  /* 丸い操作ボタン（発見モード） */
+  .fab {
+    display: grid;
+    place-items: center;
+    border: 3px solid var(--color-ink);
+    border-radius: 50%;
+    background: var(--btn-bg, #fff);
+    box-shadow: 4px 4px 0 var(--color-ink);
+    cursor: pointer;
+    transition:
+      transform var(--dur-base) var(--ease-pop),
+      box-shadow var(--dur-base) var(--ease-pop);
+  }
+  .fab:hover {
+    transform: translate(-2px, -3px) rotate(-8deg) scale(1.05);
+    box-shadow: 6px 7px 0 var(--color-ink);
+  }
+  .fab:active {
+    transform: translate(3px, 3px) scale(0.96);
+    box-shadow: 1px 1px 0 var(--color-ink);
+  }
+  .fab:disabled {
+    opacity: 0.4;
     pointer-events: none;
   }
 
-  /* ふわっと現れるアニメーション。--rise-delay で順番にずらせる */
-  .animate-rise {
-    animation: rise var(--dur-slow) var(--ease-out) both;
-    animation-delay: var(--rise-delay, 0ms);
+  /* 選択式のチップ（中身は本物の checkbox） */
+  .chip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2.75rem;
+    padding: 0 1rem;
+    border: 2px solid var(--color-ink);
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    background: #fff;
+    cursor: pointer;
+    user-select: none;
+    transition:
+      transform var(--dur-fast) var(--ease-pop),
+      background-color var(--dur-fast),
+      box-shadow var(--dur-fast);
+  }
+  .chip:hover {
+    transform: translateY(-2px);
+    box-shadow: 2px 3px 0 var(--color-ink);
+  }
+  .chip:has(input:checked) {
+    background: var(--color-sun);
+    box-shadow: var(--shadow-sm);
+  }
+  .chip:has(input:focus-visible) {
+    outline: 3px solid var(--color-sky);
+    outline-offset: 3px;
+  }
+
+  /* ラベル・シール */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.05rem 0.65rem;
+    border: 2px solid var(--color-ink);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    line-height: 1.6;
+    background: var(--tag-bg, #fff);
+  }
+  .sticker {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.85rem;
+    border: 2px solid var(--color-ink);
+    border-radius: 999px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    background: var(--sticker-bg, #fff);
+    transform: rotate(var(--r, 0deg));
+  }
+  .sticker:hover {
+    animation: wiggle 500ms ease-in-out;
+  }
+
+  /* 蛍光ペンの下線 */
+  .marker {
+    background: linear-gradient(transparent 58%, var(--color-sun) 58%, var(--color-sun) 92%, transparent 92%);
+    padding: 0 0.1em;
+  }
+
+  /* 日付タイル（チラシ・発見カードで使う） */
+  .date-tile {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    border: var(--line);
+    border-radius: var(--radius-sm);
+    background: #fff;
+    font-family: var(--font-display);
+    line-height: 1;
+    text-align: center;
+  }
+
+  /* ------------------------------------------------------------
+     掲示板。枠は「ここ 1 か所」だけ（二重枠を再発させないため、
+     EventList / EventCard 側には外枠を付けない）
+     ------------------------------------------------------------ */
+  .board {
+    position: relative;
+    padding: 2.25rem 1rem 1.75rem;
+    border: 3px solid var(--color-ink);
+    border-radius: var(--radius-xl);
+    background-color: #d9a86a;
+    /* コルクの粒 */
+    background-image:
+      radial-gradient(circle at 20% 30%, rgb(110 60 20 / 0.3) 0 1.2px, transparent 2px),
+      radial-gradient(circle at 70% 70%, rgb(255 240 210 / 0.3) 0 1px, transparent 1.8px);
+    background-size: 14px 14px, 19px 19px;
+    /* 内側の明るい木枠 → 細い線 → 外側のずらした影 */
+    box-shadow:
+      inset 0 0 0 10px #f2c38a,
+      inset 0 0 0 12.5px var(--color-ink),
+      var(--shadow-lg);
+  }
+  @media (min-width: 640px) {
+    .board {
+      padding: 3rem 2.25rem 2.4rem;
+    }
+  }
+
+  /* チラシ（紙）。紙色は --paper、傾きは --tilt */
+  .flyer {
+    position: relative;
+    height: 100%;
+    border: var(--line);
+    border-radius: 14px;
+    background: var(--paper, var(--paper-default));
+    box-shadow: 4px 4px 0 rgb(42 33 64 / 0.85);
+    transform: rotate(var(--tilt, 0deg));
+    transition:
+      transform 300ms var(--ease-pop),
+      box-shadow 300ms var(--ease-pop);
+  }
+  .flyer-hover:hover .flyer,
+  .flyer-hover:focus-within .flyer {
+    transform: rotate(0deg) translateY(-6px) scale(1.02);
+    box-shadow: 8px 10px 0 rgb(42 33 64 / 0.85);
+  }
+
+  /* 画鋲。EventList などの「貼る側」にだけ置く（EventCard には置かない＝二重画鋲防止） */
+  .pin {
+    position: absolute;
+    top: -0.65rem;
+    left: 50%;
+    z-index: 2;
+    width: 1.3rem;
+    height: 1.3rem;
+    margin-left: -0.65rem;
+    border: var(--line);
+    border-radius: 50%;
+    background: var(--pin, var(--color-coral));
+    box-shadow:
+      inset -3px -3px 0 rgb(0 0 0 / 0.18),
+      inset 2px 2px 0 rgb(255 255 255 / 0.55);
+    pointer-events: none;
+    transition: transform 300ms var(--ease-pop);
+  }
+  .flyer-hover:hover .pin {
+    transform: translateY(-4px) scale(1.12);
+  }
+
+  /* 登場アニメーション「ぽよん」。--d で順番にずらせる。
+     fill-mode は backwards（both だと終了後も transform を固定してホバーが効かない） */
+  .animate-pop {
+    animation: pop var(--dur-slow) var(--ease-pop) backwards;
+    animation-delay: var(--d, 0ms);
+  }
+  .animate-float {
+    animation: float 6s ease-in-out infinite alternate;
   }
 }
 
-@keyframes rise {
+@keyframes pop {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(14px) scale(0.94);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
+  }
+}
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(var(--r, 0deg));
+  }
+  25% {
+    transform: rotate(calc(var(--r, 0deg) - 6deg)) scale(1.06);
+  }
+  60% {
+    transform: rotate(calc(var(--r, 0deg) + 4deg)) scale(1.06);
+  }
+}
+@keyframes float {
+  to {
+    transform: translateY(-14px) rotate(8deg);
   }
 }
 
 /* ------------------------------------------------------------
-   OS の「視差効果を減らす」設定に対応
-   動き（移動・回転）を止め、色や影の変化だけ残す
+   OS の「視差効果を減らす」設定に対応：動き（移動・回転・揺れ）を止める
    ------------------------------------------------------------ */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -306,8 +402,11 @@ body::before {
     transition-duration: 1ms !important;
     scroll-behavior: auto !important;
   }
-  .glass-btn:hover,
-  .glass-btn-primary:hover {
+  .btn:hover,
+  .fab:hover,
+  .surface-link:hover,
+  .chip:hover,
+  .flyer-hover:hover .flyer {
     transform: none;
   }
 }

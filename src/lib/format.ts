@@ -58,3 +58,20 @@ export function formatFee(fee: number, note: string | null, freeLabel = "無料"
   const base = fee === 0 ? freeLabel : `${fee.toLocaleString("ja-JP")}円`;
   return note ? `${base}（${note}）` : base;
 }
+
+/**
+ * 日付タイル用に、日本時間の「月・日・曜日」を分けて返す。
+ * 例：{ month: "11", day: "20", weekday: "金", weekdayEn: "FRI" }
+ */
+export function tokyoDateParts(iso: string): { month: string; day: string; weekday: string; weekdayEn: string } {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return { month: "", day: "", weekday: "", weekdayEn: "" };
+  const get = (opts: Intl.DateTimeFormatOptions, locale = "ja-JP") =>
+    new Intl.DateTimeFormat(locale, { timeZone: TZ, ...opts }).format(d);
+  return {
+    month: get({ month: "numeric" }).replace("月", ""),
+    day: get({ day: "numeric" }).replace("日", ""),
+    weekday: get({ weekday: "short" }),
+    weekdayEn: get({ weekday: "short" }, "en-US").toUpperCase(),
+  };
+}

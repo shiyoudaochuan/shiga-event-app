@@ -12,12 +12,10 @@ export function SampleDataNotice({ compact = false }: { compact?: boolean }) {
   return (
     <div
       role="status"
-      className={`rounded-[var(--radius-md)] border border-amber-300/80 bg-amber-50/90 text-amber-900 shadow-sm backdrop-blur ${
-        compact ? "px-4 py-2 sm:py-3" : "px-4 py-3"
-      }`}
+      className={`rounded-[var(--radius-md)] border-2 border-dashed border-ink bg-white ${compact ? "px-4 py-2 sm:py-3" : "px-5 py-3"}`}
     >
-      <p className={`font-bold ${compact ? "text-sm sm:text-base" : ""}`}>⚠ {t.sample.noticeTitle}</p>
-      <p className={`mt-1 text-sm ${compact ? "hidden sm:block" : ""}`}>{t.sample.noticeBody}</p>
+      <p className={`font-extrabold ${compact ? "text-sm sm:text-base" : ""}`}>🧪 {t.sample.noticeTitle}</p>
+      <p className={`mt-1 text-sm text-ink-soft ${compact ? "hidden sm:block" : ""}`}>{t.sample.noticeBody}</p>
     </div>
   );
 }

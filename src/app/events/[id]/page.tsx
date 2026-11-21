@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPublishedEventById, currentDataSource } from "@/lib/events/repository";
@@ -7,6 +7,7 @@ import { getDictionary } from "@/lib/i18n";
 import { Badge } from "@/components/Badge";
 import { SampleDataNotice } from "@/components/SampleDataNotice";
 import { categoryLabel } from "@/config/categories";
+import { categoryColor } from "@/config/category-colors";
 import { municipalityLabel, prefectureLabel } from "@/config/municipalities";
 import { languageLabel } from "@/config/languages";
 import { formatDate, formatDateTimeRange, formatFee } from "@/lib/format";
@@ -38,6 +39,8 @@ export default async function EventDetailPage({ params }: { params: Params }) {
   const { id } = await params;
   const event = await getPublishedEventById(id);
   if (!event) notFound();
+  // チラシと同じ紙色をヘッダーに使い、掲示板から来たときに「同じ紙」だと分かるようにする
+  const color = categoryColor(event.category);
 
  const isSample = currentDataSource() === "sample";
 
@@ -69,25 +72,25 @@ const daysUntil = Number.isFinite(eventStart)
   return (
     <article className="space-y-6">
       <nav aria-label="パンくず">
-        <Link href="/" className="inline-flex min-h-11 items-center text-brand-800 underline">
+        <Link href="/" className="btn btn-sm">
           ← {t.common.backToList}
         </Link>
       </nav>
 
       {isSample && <SampleDataNotice />}
 
-      <header className="space-y-3">
+      <header className="surface space-y-3 p-6 sm:p-8" style={{ "--surface-bg": color.paper } as CSSProperties}>
         <div className="flex flex-wrap gap-2">
           {isSample && <Badge tone="warning">{t.sample.badge}</Badge>}
-          <Badge tone="brand">{categoryLabel(event.category)}</Badge>
+          <Badge>{categoryLabel(event.category)}</Badge>
           {event.participationFee === 0 && <Badge tone="success">{t.common.free}</Badge>}
         </div>
-        <h1 className="text-2xl font-bold leading-snug sm:text-3xl">{event.title}</h1>
+        <h1 className="text-2xl font-extrabold leading-snug sm:text-4xl">{event.title}</h1>
         {/* イベント開催までの残り日数 */}
 {daysUntil !== null && (
   <div className="mt-3">
 
-    <p className="inline-block rounded-full bg-amber-100 px-4 py-2 text-sm font-bold text-amber-900">
+    <p className="inline-block -rotate-1 rounded-full border-[2.5px] border-ink bg-sun px-4 py-1.5 text-sm font-extrabold shadow-[3px_3px_0_var(--color-ink)]">
 
       {daysUntil > 0
         ? `📅 開催まであと${daysUntil}日`
@@ -103,20 +106,20 @@ const daysUntil = Number.isFinite(eventStart)
 
       {/* 申込ボタンは最初に目に入る位置に置く（スマホで最重要の行動） */}
       {registrationUrl && (
-        <div className="rounded-xl border border-brand-100 bg-brand-50 p-4">
+        <div className="surface p-5" style={{ "--surface-bg": "#fff3c4", "--surface-shadow": "var(--color-sun)" } as CSSProperties}>
           <a
             href={registrationUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex min-h-12 w-full items-center justify-center rounded-lg bg-brand-600 px-6 text-base font-bold text-white hover:bg-brand-700 sm:w-auto"
+            className="btn btn-accent w-full sm:w-auto"
           >
             {t.event.registrationButton} ↗
           </a>
-          <p className="mt-2 text-sm text-slate-600">{t.event.externalLinkNote}</p>
+          <p className="mt-2 text-sm text-ink-soft">{t.event.externalLinkNote}</p>
         </div>
       )}
 
-      <section aria-labelledby="info-heading" className="rounded-xl border border-slate-200 bg-white p-5">
+      <section aria-labelledby="info-heading" className="surface p-5 sm:p-6">
         <h2 id="info-heading" className="sr-only">
           {t.event.detailHeading}
         </h2>
@@ -133,7 +136,7 @@ const daysUntil = Number.isFinite(eventStart)
               {organizerUrl && (
                 <>
                   {" "}
-                  <a href={organizerUrl} target="_blank" rel="noopener noreferrer" className="text-brand-800 underline">
+                  <a href={organizerUrl} target="_blank" rel="noopener noreferrer" className="font-bold underline decoration-coral decoration-2 underline-offset-4">
                     （{t.event.organizerWebsite} ↗）
                   </a>
                 </>
@@ -149,7 +152,7 @@ const daysUntil = Number.isFinite(eventStart)
           </Row>
           <Row label={t.event.registrationUrl}>
             {registrationUrl ? (
-              <a href={registrationUrl} target="_blank" rel="noopener noreferrer" className="break-all text-brand-800 underline">
+              <a href={registrationUrl} target="_blank" rel="noopener noreferrer" className="break-all font-bold underline decoration-coral decoration-2 underline-offset-4">
                 {registrationUrl}
               </a>
             ) : (
@@ -158,7 +161,7 @@ const daysUntil = Number.isFinite(eventStart)
           </Row>
           <Row label={t.event.sourceUrl}>
             {sourceUrl ? (
-              <a href={sourceUrl} target="_blank" rel="noopener noreferrer" className="text-brand-800 underline">
+              <a href={sourceUrl} target="_blank" rel="noopener noreferrer" className="font-bold underline decoration-coral decoration-2 underline-offset-4">
                 {hostnameOf(sourceUrl)} ↗
               </a>
             ) : (
@@ -169,12 +172,12 @@ const daysUntil = Number.isFinite(eventStart)
         </dl>
       </section>
 
-      <section aria-labelledby="desc-heading" className="rounded-xl border border-slate-200 bg-white p-5">
-        <h2 id="desc-heading" className="text-lg font-bold">
+      <section aria-labelledby="desc-heading" className="surface p-5 sm:p-6">
+        <h2 id="desc-heading" className="text-lg font-extrabold">
           {t.event.description}
         </h2>
         {/* whitespace-pre-line で改行を保持。HTML としては解釈しない */}
-        <p className="mt-3 whitespace-pre-line text-slate-800">{event.description}</p>
+        <p className="mt-3 whitespace-pre-line">{event.description}</p>
       </section>
     </article>
   );
@@ -183,8 +186,8 @@ const daysUntil = Number.isFinite(eventStart)
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
     <>
-      <dt className="font-semibold text-slate-600">{label}</dt>
-      <dd className="text-slate-900">{children}</dd>
+      <dt className="font-extrabold text-ink-soft">{label}</dt>
+      <dd className="font-medium">{children}</dd>
     </>
   );
 }

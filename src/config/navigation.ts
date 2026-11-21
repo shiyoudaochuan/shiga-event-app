@@ -4,7 +4,7 @@
  */
 export const NAV_ITEMS = [
   { href: "/", label: "みんなの掲示板", shortLabel: "掲示板", icon: "📌" },
-  { href: "/discover", label: "イベント発見", shortLabel: "発見", icon: "✨" },
+  { href: "/discover", label: "イベント発見", shortLabel: "発見", icon: "🎲" },
   { href: "/my", label: "マイ掲示板", shortLabel: "マイ", icon: "⭐" },
   { href: "/search", label: "イベント検索", shortLabel: "検索", icon: "🔍" },
 ] as const;

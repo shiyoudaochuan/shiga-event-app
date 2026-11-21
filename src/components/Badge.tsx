@@ -1,6 +1,9 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
-/** 小さなラベル（カテゴリ・言語・無料など）。色は用途ごとに分ける */
+/**
+ * 小さなラベル（カテゴリ・言語・無料など）。
+ * Design C：太い輪郭線のシール。色は用途ごとに分ける（文字はすべてぶどう色で読みやすさを揃える）
+ */
 export function Badge({
   children,
   tone = "neutral",
@@ -9,12 +12,14 @@ export function Badge({
   tone?: "neutral" | "brand" | "success" | "warning";
 }) {
   const tones = {
-    neutral: "bg-slate-100 text-slate-700",
-    brand: "bg-brand-100 text-brand-800",
-    success: "bg-emerald-100 text-emerald-800",
-    warning: "bg-amber-100 text-amber-900",
+    neutral: "#ffffff",
+    brand: "#dbe7ff",
+    success: "#c9f2e6",
+    warning: "#ffe08a",
   } as const;
   return (
-    <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold ${tones[tone]}`}>{children}</span>
+    <span className="tag" style={{ "--tag-bg": tones[tone] } as CSSProperties}>
+      {children}
+    </span>
   );
 }

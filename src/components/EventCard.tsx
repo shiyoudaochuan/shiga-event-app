@@ -4,129 +4,82 @@ import { Badge } from "./Badge";
 import { categoryLabel } from "@/config/categories";
 import { municipalityLabel } from "@/config/municipalities";
 import { languageLabel } from "@/config/languages";
-import { formatDateTimeRange, formatFee } from "@/lib/format";
+import { formatDateTimeRange, formatFee, tokyoDateParts } from "@/lib/format";
 import { getDictionary } from "@/lib/i18n";
 
 /**
- * イベント一覧に表示するカード。
+ * 掲示板に貼るチラシ 1 枚。
  *
- * イベントの基本情報を表示し、
- * タイトルをクリックすると詳細ページに移動する。
+ * - 紙色・傾きは親（EventList）が CSS 変数 --paper / --tilt で渡す
+ * - 画鋲は親の <li> にだけ置く（ここには置かない＝二重画鋲の防止）
+ * - タイトルのリンクをカード全体に広げているので、どこを押しても詳細へ移動できる
  */
-export function EventCard({
-  event,
-  isSample = false,
-}: {
-  event: Event;
-  isSample?: boolean;
-}) {
+export function EventCard({ event, isSample = false }: { event: Event; isSample?: boolean }) {
   const t = getDictionary();
-
   const summary = event.description.split("\n")[0];
+  const date = tokyoDateParts(event.startAt);
+  const isFree = event.participationFee === 0;
 
   return (
-    <article
-      // 枠線は付けない（コルクボード側の枠と二重にならないように）。紙の質感と影は .paper（globals.css）
-      className="paper relative flex h-full flex-col gap-3 rounded-sm p-5 pt-8 group-hover:[box-shadow:var(--paper-shadow-lift)] focus-within:ring-2 focus-within:ring-brand-600"
-    >
-      {/* イベントのカテゴリー・料金 */}
-      <div className="flex flex-wrap items-center gap-2">
-        {isSample && (
-          <Badge tone="warning">
-            {t.sample.badge}
-          </Badge>
-        )}
-
-        <Badge tone="brand">
-          {categoryLabel(event.category)}
-        </Badge>
-
-        {event.participationFee === 0 ? (
-          <Badge tone="success">
+    <article className="flyer flex flex-col gap-3 p-5 pt-6">
+      {/* カテゴリー・料金 */}
+      <div className="flex flex-wrap items-center gap-1.5">
+        {isSample && <Badge tone="warning">{t.sample.badge}</Badge>}
+        <Badge>{categoryLabel(event.category)}</Badge>
+        {isFree ? (
+          <span className="ml-auto rotate-6 rounded-full bg-coral px-2 font-display text-xs font-semibold text-ink">
             {t.common.free}
-          </Badge>
+          </span>
         ) : (
-          <Badge>
-            {formatFee(event.participationFee, null)}
-          </Badge>
+          <span className="ml-auto text-xs font-extrabold">{formatFee(event.participationFee, null)}</span>
         )}
       </div>
 
-      {/* イベントタイトル */}
-      <h3 className="text-lg font-bold leading-snug">
-        <Link
-          href={`/events/${event.id}`}
-          className="text-brand-800 after:absolute after:inset-0 after:content-['']"
-        >
+      {/* タイトル */}
+      <h3 className="text-lg font-extrabold leading-snug">
+        <Link href={`/events/${event.id}`} className="after:absolute after:inset-0 after:content-['']">
           {event.title}
         </Link>
       </h3>
 
-      {/* イベントの基本情報 */}
-      <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm text-slate-700">
-        <dt className="font-semibold text-slate-500">
-          📅
-        </dt>
+      {/* 説明（1 行目） */}
+      <p className="line-clamp-2 text-sm text-ink-soft">{summary}</p>
 
-        <dd>
-          <span className="sr-only">
-            {t.event.dateTime}:
+      {/* 日付タイル ＋ 基本情報 */}
+      <div className="mt-auto flex items-start gap-3 border-t-2 border-dashed border-ink/25 pt-3">
+        <span className="date-tile h-14 w-14" aria-hidden="true">
+          <span>
+            <span className="block text-[0.6rem] font-semibold text-coral">{date.weekdayEn}</span>
+            <span className="block text-2xl font-bold">{date.day}</span>
           </span>
-
-          {formatDateTimeRange(
-            event.startAt,
-            event.endAt
+        </span>
+        <dl className="grid grid-cols-[auto_1fr] gap-x-2 gap-y-0.5 text-sm font-medium">
+          <dt aria-hidden="true">📅</dt>
+          <dd>
+            <span className="sr-only">{t.event.dateTime}:</span>
+            {formatDateTimeRange(event.startAt, event.endAt)}
+          </dd>
+          <dt aria-hidden="true">📍</dt>
+          <dd>
+            <span className="sr-only">{t.event.area}:</span>
+            {municipalityLabel(event.municipality)} / {event.venue}
+          </dd>
+          {event.organizer && (
+            <>
+              <dt aria-hidden="true">🏢</dt>
+              <dd>
+                <span className="sr-only">{t.event.organizer}:</span>
+                {event.organizer.name}
+              </dd>
+            </>
           )}
-        </dd>
-
-        <dt className="font-semibold text-slate-500">
-          📍
-        </dt>
-
-        <dd>
-          <span className="sr-only">
-            {t.event.area}:
-          </span>
-
-          {municipalityLabel(event.municipality)} /{" "}
-          {event.venue}
-        </dd>
-
-        {event.organizer && (
-          <>
-            <dt className="font-semibold text-slate-500">
-              🏢
-            </dt>
-
-            <dd>
-              <span className="sr-only">
-                {t.event.organizer}:
-              </span>
-
-              {event.organizer.name}
-            </dd>
-          </>
-        )}
-
-        <dt className="font-semibold text-slate-500">
-          🗣
-        </dt>
-
-        <dd>
-          <span className="sr-only">
-            {t.event.languages}:
-          </span>
-
-          {event.supportedLanguages
-            .map(languageLabel)
-            .join(" / ")}
-        </dd>
-      </dl>
-
-      {/* イベントの説明 */}
-      <p className="line-clamp-2 text-sm text-slate-600">
-        {summary}
-      </p>
+          <dt aria-hidden="true">🗣</dt>
+          <dd>
+            <span className="sr-only">{t.event.languages}:</span>
+            {event.supportedLanguages.map(languageLabel).join(" / ")}
+          </dd>
+        </dl>
+      </div>
     </article>
   );
 }

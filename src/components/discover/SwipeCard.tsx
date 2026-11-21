@@ -1,12 +1,13 @@
 "use client";
 
-import { useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
+import { useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent } from "react";
 import type { Event } from "@/lib/types";
 import { Badge } from "@/components/Badge";
 import { categoryLabel } from "@/config/categories";
+import { categoryColor } from "@/config/category-colors";
 import { municipalityLabel } from "@/config/municipalities";
 import { languageLabel } from "@/config/languages";
-import { formatDateTimeRange, formatFee } from "@/lib/format";
+import { formatDateTimeRange, formatFee, tokyoDateParts } from "@/lib/format";
 
 export type SwipeDirection = "up" | "down";
 
@@ -95,7 +96,7 @@ export function SwipeCard({ event, isSample, isSaved, onDecide, onOpen }: Props)
   }
 
   // ------------------------------------------------------------
-  // 見た目の計算（移動量 → 位置・傾き・ラベルの濃さ）
+  // 見た目の計算（移動量 → 位置・傾き・スタンプの濃さ・影）
   // ------------------------------------------------------------
   const dy = drag?.dy ?? 0;
   const dx = drag?.dx ?? 0;
@@ -103,95 +104,102 @@ export function SwipeCard({ event, isSample, isSaved, onDecide, onOpen }: Props)
   const skipStrength = Math.min(Math.max(dy / THRESHOLD, 0), 1);
 
   let transform = `translate3d(${dx * 0.3}px, ${dy}px, 0) rotate(${dx * 0.03}deg)`;
-  if (exiting === "up") transform = "translate3d(0, -120%, 0) rotate(-4deg)";
-  if (exiting === "down") transform = "translate3d(0, 120%, 0) rotate(4deg)";
+  if (exiting === "up") transform = "translate3d(0, -120%, 0) rotate(-6deg)";
+  if (exiting === "down") transform = "translate3d(0, 120%, 0) rotate(6deg)";
 
   const summary = event.description.split("\n")[0];
+  const color = categoryColor(event.category);
+  const date = tokyoDateParts(event.startAt);
+  // スワイプ量に応じて影の色と大きさを変える（上＝コーラル／下＝グレー）
+  const shadowColor = saveStrength > 0 ? "var(--color-coral)" : skipStrength > 0 ? "#9a93ab" : "var(--color-ink)";
+  const shadowSize = 6 + 6 * Math.max(saveStrength, skipStrength);
 
   return (
     // 外側：登場アニメーション用。内側：指の動きに合わせた transform 用
     // （CSS アニメーションの transform はインライン style より優先されるため、要素を分けている）
-    <div className="animate-rise absolute inset-0">
-    <div
-      role="button"
-      tabIndex={0}
-      aria-label={`${event.title}。Enter キーで詳細を開きます`}
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      onPointerCancel={handlePointerCancel}
-      onKeyDown={handleKeyDown}
-      className="h-full cursor-grab select-none outline-offset-4 active:cursor-grabbing"
-      style={{
-        touchAction: "none",
-        transform,
-        opacity: exiting ? 0 : 1,
-        // 指で動かしている間はアニメーションなし（指に吸い付くように）、離したらなめらかに戻る
-        transition: drag ? "none" : `transform ${EXIT_MS}ms var(--ease-out), opacity ${EXIT_MS}ms ease`,
-      }}
-    >
-      <article
-        className="paper relative flex h-full flex-col overflow-hidden rounded-sm p-4 pt-8 sm:p-5 sm:pt-8"
+    <div className="animate-pop absolute inset-0">
+      <div
+        role="button"
+        tabIndex={0}
+        aria-label={`${event.title}。Enter キーで詳細を開きます`}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerCancel}
+        onKeyDown={handleKeyDown}
+        className="relative h-full cursor-grab select-none rounded-[var(--radius-lg)] active:cursor-grabbing"
         style={{
-          boxShadow:
-            saveStrength > 0
-              ? `0 0 0 ${3 * saveStrength}px rgb(244 63 94 / ${0.8 * saveStrength}), var(--paper-shadow-lift)`
-              : skipStrength > 0
-                ? `0 0 0 ${3 * skipStrength}px rgb(100 116 139 / ${0.8 * skipStrength}), var(--paper-shadow-lift)`
-                : "var(--paper-shadow-lift)",
+          touchAction: "none",
+          transform,
+          opacity: exiting ? 0 : 1,
+          // 指で動かしている間はアニメーションなし（指に吸い付くように）、離したら「ぽよん」と戻る
+          transition: drag ? "none" : `transform ${EXIT_MS}ms var(--ease-pop), opacity ${EXIT_MS}ms ease`,
         }}
       >
-        <span aria-hidden="true" className="push-pin" />
-
-        {/* スワイプ中に浮かび上がるラベル（視覚的フィードバック） */}
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute left-1/2 top-10 z-20 -translate-x-1/2 -rotate-6 rounded-xl border-4 border-rose-500 bg-white/90 px-4 py-1 text-2xl font-black text-rose-600"
-          style={{ opacity: exiting === "up" ? 1 : saveStrength }}
+        {/* 画鋲は紙の外にはみ出すので、overflow-hidden の article の外に置く */}
+        <span aria-hidden="true" className="pin" style={{ "--pin": color.pin } as CSSProperties} />
+        <article
+          className="relative flex h-full flex-col overflow-hidden rounded-[var(--radius-lg)] border-[3px] border-ink p-5 pt-6"
+          style={{ background: color.paper, boxShadow: `${shadowSize}px ${shadowSize}px 0 ${shadowColor}` }}
         >
-          ♥ 保存
-        </span>
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute bottom-10 left-1/2 z-20 -translate-x-1/2 rotate-6 rounded-xl border-4 border-slate-500 bg-white/90 px-4 py-1 text-2xl font-black text-slate-600"
-          style={{ opacity: exiting === "down" ? 1 : skipStrength }}
-        >
-          スキップ
-        </span>
+          {/* スワイプ中に浮かび上がるスタンプ（視覚的フィードバック） */}
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute left-1/2 top-12 z-20 -translate-x-1/2 -rotate-6 whitespace-nowrap rounded-2xl border-[3px] border-ink bg-coral px-5 py-1 text-2xl font-extrabold shadow-[4px_4px_0_var(--color-ink)]"
+            style={{ opacity: exiting === "up" ? 1 : saveStrength }}
+          >
+            ♥ 保存！
+          </span>
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute bottom-12 left-1/2 z-20 -translate-x-1/2 rotate-6 whitespace-nowrap rounded-2xl border-[3px] border-ink bg-white px-5 py-1 text-2xl font-extrabold shadow-[4px_4px_0_var(--color-ink)]"
+            style={{ opacity: exiting === "down" ? 1 : skipStrength }}
+          >
+            ✕ スキップ
+          </span>
 
-        <div className="flex flex-wrap items-center gap-2">
-          {isSample && <Badge tone="warning">サンプル</Badge>}
-          <Badge tone="brand">{categoryLabel(event.category)}</Badge>
-          <Badge tone={event.participationFee === 0 ? "success" : "neutral"}>
-            {formatFee(event.participationFee, null)}
-          </Badge>
-          {isSaved && <Badge tone="warning">♥ 保存済み</Badge>}
-        </div>
+          <div className="flex items-start gap-3">
+            <span className="date-tile h-[4.25rem] w-14 shadow-[3px_3px_0_var(--color-ink)]" aria-hidden="true">
+              <span>
+                <span className="block text-[0.65rem] font-semibold text-coral">{date.weekdayEn}</span>
+                <span className="block text-3xl font-bold">{date.day}</span>
+                <span className="block text-[0.65rem] font-semibold">{date.month}月</span>
+              </span>
+            </span>
+            <div className="ml-auto flex flex-wrap justify-end gap-1.5">
+              {isSample && <Badge tone="warning">サンプル</Badge>}
+              <span className="tag" style={{ "--tag-bg": color.accent } as CSSProperties}>
+                {categoryLabel(event.category)}
+              </span>
+              <Badge tone={event.participationFee === 0 ? "success" : "neutral"}>{formatFee(event.participationFee, null)}</Badge>
+              {isSaved && <Badge tone="warning">♥ 保存済み</Badge>}
+            </div>
+          </div>
 
-        <h2 className="mt-2 text-lg font-bold leading-snug text-brand-800 sm:mt-3 sm:text-2xl">{event.title}</h2>
+          <h2 className="mt-3 text-lg font-extrabold leading-snug sm:text-2xl">{event.title}</h2>
 
-        <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5 text-sm text-slate-700">
-          <dt aria-label="開催日時">📅</dt>
-          <dd className="font-semibold text-slate-900">{formatDateTimeRange(event.startAt, event.endAt)}</dd>
-          <dt aria-label="場所">📍</dt>
-          <dd>
-            {municipalityLabel(event.municipality)} / {event.venue}
-          </dd>
-          {event.organizer && (
-            <>
-              <dt aria-label="主催">🏢</dt>
-              <dd>{event.organizer.name}</dd>
-            </>
-          )}
-          <dt aria-label="使える言語">🗣</dt>
-          <dd>{event.supportedLanguages.map(languageLabel).join(" / ")}</dd>
-        </dl>
+          <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-2 gap-y-1 text-sm font-medium">
+            <dt aria-label="開催日時">📅</dt>
+            <dd className="font-bold">{formatDateTimeRange(event.startAt, event.endAt)}</dd>
+            <dt aria-label="場所">📍</dt>
+            <dd>
+              {municipalityLabel(event.municipality)} / {event.venue}
+            </dd>
+            {event.organizer && (
+              <>
+                <dt aria-label="主催">🏢</dt>
+                <dd>{event.organizer.name}</dd>
+              </>
+            )}
+            <dt aria-label="使える言語">🗣</dt>
+            <dd>{event.supportedLanguages.map(languageLabel).join(" / ")}</dd>
+          </dl>
 
-        <p className="mt-3 line-clamp-2 text-sm text-slate-600 sm:line-clamp-4">{summary}</p>
+          <p className="mt-2 line-clamp-1 text-sm text-ink-soft sm:line-clamp-3">{summary}</p>
 
-        <p className="mt-auto pt-3 text-center text-xs font-semibold text-slate-500">タップ / クリックで詳細を見る</p>
-      </article>
-    </div>
+          <p className="mt-auto pt-2 text-center text-xs font-bold text-ink-soft">👆 タップ / クリックで詳細を見る</p>
+        </article>
+      </div>
     </div>
   );
 }

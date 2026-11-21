@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import Link from "next/link";
 
 import type { Metadata } from "next";
@@ -23,25 +24,25 @@ export default function SearchPage() {
 
         <Link
           href="/"
-          className="inline-flex min-h-11 items-center text-sm font-medium text-blue-800 hover:underline"
+          className="btn btn-sm"
         >
           ← イベント掲示板に戻る
         </Link>
 
         {/* ページタイトル */}
 
-        <header className="glass animate-rise mb-8 mt-4 rounded-[var(--radius-lg)] px-5 py-7 text-center">
+        <header className="surface animate-pop mb-8 mt-5 px-5 py-8 text-center" style={{ "--surface-bg": "#e3ecff", "--surface-shadow": "var(--color-sky)" } as CSSProperties}>
 
-          <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">
-            イベントを探す
+          <h1 className="text-3xl font-extrabold sm:text-4xl">
+            🔍 イベントを探す
           </h1>
 
-          <p className="mx-auto mt-4 max-w-2xl leading-relaxed text-slate-600">
+          <p className="mx-auto mt-4 max-w-2xl leading-relaxed text-ink-soft">
             あなたの興味や希望に合わせて、
             滋賀県内のイベントを探しましょう。
           </p>
 
-          <p className="mt-2 text-sm text-slate-500">
+          <p className="mt-2 text-sm text-ink-soft">
             質問に答えるだけで検索条件を設定できます。
           </p>
 

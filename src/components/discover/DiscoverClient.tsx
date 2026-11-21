@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import type { Event } from "@/lib/types";
 import { buildDeck } from "@/lib/discover/deck";
 import {
@@ -117,7 +117,7 @@ export function DiscoverClient({ events, isSample }: { events: Event[]; isSample
 
   // LocalStorage を読む前（サーバー描画・初回描画）は枠だけ出す
   if (!hydrated) {
-    return <div className="glass mx-auto h-96 max-w-md animate-pulse rounded-[var(--radius-lg)]" aria-busy="true" />;
+    return <div className="surface mx-auto h-96 max-w-md animate-pulse" aria-busy="true" />;
   }
 
   if (!prefs || editing) {
@@ -133,19 +133,19 @@ export function DiscoverClient({ events, isSample }: { events: Event[]; isSample
     <div className="mx-auto grid max-w-5xl gap-5 lg:grid-cols-[1fr_20rem] lg:items-start">
       {/* ---------- 中央：チラシと操作ボタン ---------- */}
       <section aria-labelledby="discover-heading" className="mx-auto w-full max-w-md">
-        <div className="mb-3 flex items-center justify-between gap-3 px-1">
-          <h1 id="discover-heading" className="text-xl font-bold text-slate-900">
-            ✨ イベント発見
+        <div className="mb-2 flex items-center justify-between gap-3 px-1 sm:mb-3">
+          <h1 id="discover-heading" className="text-2xl font-extrabold">
+            🎲 イベント発見
           </h1>
-          <button type="button" onClick={() => setEditing(true)} className="glass glass-btn min-h-10 px-4 text-sm lg:hidden">
+          <button type="button" onClick={() => setEditing(true)} className="btn btn-sm lg:hidden">
             ⚙ 条件
           </button>
         </div>
 
         {/* 進み具合 */}
-        <div className="mb-4 flex items-center gap-3 px-1">
+        <div className="mb-5 flex items-center gap-3 px-1">
           <div
-            className="h-2 flex-1 overflow-hidden rounded-full bg-white/60 ring-1 ring-slate-900/5"
+            className="h-4 flex-1 overflow-hidden rounded-full border-2 border-ink bg-white"
             role="progressbar"
             aria-label="見たチラシの割合"
             aria-valuemin={0}
@@ -153,31 +153,31 @@ export function DiscoverClient({ events, isSample }: { events: Event[]; isSample
             aria-valuenow={Math.min(index, deck.length)}
           >
             <div
-              className="h-full rounded-full bg-gradient-to-r from-brand-600 to-teal-500 transition-[width] duration-300"
+              className="h-full rounded-full bg-sun transition-[width] duration-300"
               style={{ width: `${progress * 100}%` }}
             />
           </div>
-          <span className="text-sm font-semibold tabular-nums text-slate-700">
+          <span className="font-display font-semibold tabular-nums">
             {Math.min(index + 1, deck.length)} / {deck.length}
           </span>
         </div>
 
         {relaxed && (
-          <p className="glass mb-4 rounded-[var(--radius-md)] px-4 py-2 text-sm text-slate-700">
+          <p className="mb-4 rounded-[var(--radius-md)] border-2 border-dashed border-ink bg-white px-4 py-2 text-sm font-bold">
             条件にぴったり合うイベントがなかったため、すべてのイベントを表示しています。
           </p>
         )}
 
         {/* チラシ（スワイプ領域）。高さを固定し、下の操作ボタンの位置がずれないようにする */}
-        <div className="relative h-[22rem] sm:h-[28rem]">
+        <div className="relative h-[20.5rem] sm:h-[28rem]">
           {done ? (
             <DeckFinished savedCount={savedIds.length} onRestart={() => { setIndex(0); setHistory([]); }} />
           ) : (
             <>
               {next && (
                 // 次のチラシを少しだけ後ろに見せて「束」になっている感じを出す
-                <div aria-hidden="true" className="absolute inset-0 translate-y-3 scale-[0.95] opacity-70">
-                  <div className="paper h-full rounded-sm" />
+                <div aria-hidden="true" className="absolute inset-0 translate-x-2 translate-y-3 rotate-3">
+                  <div className="h-full rounded-[var(--radius-lg)] border-[3px] border-ink bg-white shadow-[5px_5px_0_var(--color-ink)]" />
                 </div>
               )}
               {current && (
@@ -195,14 +195,14 @@ export function DiscoverClient({ events, isSample }: { events: Event[]; isSample
         </div>
 
         {/* 操作ボタン（スワイプの代わり） */}
-        <div className="mt-4 grid grid-cols-4 items-center gap-2 sm:mt-5">
+        <div className="mt-6 grid grid-cols-4 items-center gap-2 sm:mt-8">
           <RoundButton label="元に戻す" icon="↶" onClick={handleUndo} disabled={history.length === 0} small />
           <RoundButton label="スキップ" icon="↓" onClick={() => handleDecision("down")} disabled={done} tone="skip" />
           <RoundButton label="保存" icon="♥" onClick={() => handleDecision("up")} disabled={done} tone="save" />
           <RoundButton label="詳細" icon="ⓘ" onClick={openDetail} disabled={done} small />
         </div>
 
-        <p className="mt-3 text-center text-sm text-slate-600">
+        <p className="mt-4 text-center text-sm font-bold text-ink-soft">
           <span className="md:hidden">上にスワイプで保存・下にスワイプでスキップ・タップで詳細</span>
           <span className="hidden md:inline">↑ 保存 ／ ↓ スキップ ／ U 元に戻す ／ チラシをクリックで詳細</span>
         </p>
@@ -214,27 +214,27 @@ export function DiscoverClient({ events, isSample }: { events: Event[]; isSample
       </section>
 
       {/* ---------- 右側（PC）：情報パネル ---------- */}
-      <aside className="glass hidden rounded-[var(--radius-lg)] p-5 lg:block" aria-label="発見モードの情報">
-        <h2 className="font-bold text-slate-900">いまの条件</h2>
-        <p className="mt-1 text-sm text-slate-700">
+      <aside className="surface hidden p-5 lg:block" style={{ "--surface-bg": "#fff3c4", "--surface-shadow": "var(--color-sun)" } as CSSProperties} aria-label="発見モードの情報">
+        <h2 className="font-bold">いまの条件</h2>
+        <p className="mt-1 text-sm text-ink">
           {prefs.mode === "skipped" || conditionCount === 0 ? "条件なし（すべてのイベント）" : `${conditionCount} 個の条件で表示中`}
         </p>
-        <button type="button" onClick={() => setEditing(true)} className="glass glass-btn mt-3 w-full text-sm">
+        <button type="button" onClick={() => setEditing(true)} className="btn btn-sm mt-3 w-full">
           ⚙ 条件を変更する
         </button>
 
-        <hr className="my-5 border-white/80" />
+        <hr className="my-5 border-t-2 border-dashed border-ink/25" />
 
-        <h2 className="font-bold text-slate-900">お気に入り</h2>
-        <p className="mt-1 text-sm text-slate-700">{savedIds.length} 件保存しています</p>
-        <Link href="/my" className="glass-btn-primary mt-3 w-full text-sm">
+        <h2 className="font-bold">お気に入り</h2>
+        <p className="mt-1 text-sm text-ink">{savedIds.length} 件保存しています</p>
+        <Link href="/my" className="btn btn-sm btn-primary mt-3 w-full">
           ⭐ マイ掲示板を見る
         </Link>
 
-        <hr className="my-5 border-white/80" />
+        <hr className="my-5 border-t-2 border-dashed border-ink/25" />
 
-        <h2 className="font-bold text-slate-900">キーボード操作</h2>
-        <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm text-slate-700">
+        <h2 className="font-bold">キーボード操作</h2>
+        <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm text-ink">
           <dt><Kbd>↑</Kbd></dt><dd>お気に入りに保存</dd>
           <dt><Kbd>↓</Kbd></dt><dd>今回はスキップ</dd>
           <dt><Kbd>U</Kbd></dt><dd>元に戻す</dd>
@@ -246,7 +246,7 @@ export function DiscoverClient({ events, isSample }: { events: Event[]; isSample
 }
 
 function Kbd({ children }: { children: ReactNode }) {
-  return <kbd className="rounded-md bg-white/80 px-1.5 py-0.5 font-sans text-xs font-bold text-slate-800 ring-1 ring-slate-900/10">{children}</kbd>;
+  return <kbd className="rounded-md border-2 border-ink bg-white px-1.5 py-0.5 font-display text-xs font-bold">{children}</kbd>;
 }
 
 function RoundButton({
@@ -264,38 +264,33 @@ function RoundButton({
   tone?: "save" | "skip";
   small?: boolean;
 }) {
-  const toneClass =
-    tone === "save"
-      ? "text-rose-600 ring-2 ring-rose-300/70"
-      : tone === "skip"
-        ? "text-slate-700 ring-2 ring-slate-300/70"
-        : "text-slate-700";
+  // 保存＝コーラル、スキップ＝白、補助（元に戻す・詳細）＝小さめ
+  const bg = tone === "save" ? "var(--color-coral)" : tone === "skip" ? "#fff" : "var(--color-cream)";
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`glass glass-btn mx-auto flex-col gap-0 rounded-full p-0 disabled:pointer-events-none disabled:opacity-40 ${
-        small ? "h-14 w-14" : "h-16 w-16 sm:h-[4.5rem] sm:w-[4.5rem]"
-      } ${toneClass}`}
+      className={`fab mx-auto flex-col ${small ? "h-12 w-12 sm:h-14 sm:w-14" : "h-16 w-16 sm:h-20 sm:w-20"}`}
+      style={{ "--btn-bg": bg } as CSSProperties}
     >
-      <span aria-hidden="true" className={small ? "text-lg leading-none" : "text-2xl leading-none"}>
+      <span aria-hidden="true" className={small ? "text-lg leading-none" : "text-2xl font-black leading-none"}>
         {icon}
       </span>
-      <span className="mt-0.5 text-[0.7rem] font-bold leading-none text-slate-700">{label}</span>
+      <span className="mt-1 text-[0.68rem] font-extrabold leading-none">{label}</span>
     </button>
   );
 }
 
 function DeckFinished({ savedCount, onRestart }: { savedCount: number; onRestart: () => void }) {
   return (
-    <div className="glass animate-rise flex h-full flex-col items-center justify-center gap-3 rounded-[var(--radius-lg)] p-6 text-center">
+    <div className="surface animate-pop flex h-full flex-col items-center justify-center gap-3 p-6 text-center" style={{ "--surface-bg": "#d9f7ef" } as CSSProperties}>
       <p className="text-4xl" aria-hidden="true">🎉</p>
-      <p className="text-lg font-bold text-slate-900">すべてのチラシを見ました</p>
-      <p className="text-sm text-slate-700">お気に入り：{savedCount} 件</p>
+      <p className="text-lg font-bold">すべてのチラシを見ました</p>
+      <p className="text-sm text-ink">お気に入り：{savedCount} 件</p>
       <div className="mt-2 flex flex-wrap justify-center gap-2">
-        <Link href="/my" className="glass-btn-primary">⭐ マイ掲示板へ</Link>
-        <button type="button" onClick={onRestart} className="glass glass-btn">最初から見る</button>
+        <Link href="/my" className="btn btn-primary">⭐ マイ掲示板へ</Link>
+        <button type="button" onClick={onRestart} className="btn">最初から見る</button>
       </div>
     </div>
   );

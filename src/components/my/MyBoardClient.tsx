@@ -9,6 +9,7 @@ import { categoryLabel } from "@/config/categories";
 import { municipalityLabel } from "@/config/municipalities";
 import { formatDateTimeRange } from "@/lib/format";
 import { buildDeck } from "@/lib/discover/deck";
+import { categoryColor, FLYER_TILTS } from "@/config/category-colors";
 import { favorites, going, useDiscoverPrefs, useFavorites, useGoing, useHydrated } from "@/lib/discover/storage";
 
 /**
@@ -55,19 +56,19 @@ export function MyBoardClient({ events, isSample }: { events: Event[]; isSample:
 
   return (
     <div className="space-y-5">
-      <header className="glass animate-rise flex flex-col gap-4 rounded-[var(--radius-lg)] px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-7">
+      <header className="surface animate-pop flex flex-col gap-4 px-5 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-7" style={{ "--surface-bg": "#d9f7ef", "--surface-shadow": "var(--color-mint)" } as CSSProperties}>
         <div>
-          <p className="text-sm font-semibold text-brand-700">⭐ マイ掲示板</p>
-          <h1 className="mt-1 text-2xl font-bold text-slate-900 sm:text-3xl">わたしのイベント</h1>
-          <p className="mt-1 text-sm text-slate-600">この端末のブラウザにだけ保存されています（ログイン不要）。</p>
+          <p className="text-sm font-extrabold text-coral">⭐ マイ掲示板</p>
+          <h1 className="mt-1 text-2xl font-extrabold sm:text-3xl">わたしのイベント</h1>
+          <p className="mt-1 text-sm font-medium text-ink-soft">この端末のブラウザにだけ保存されています（ログイン不要）。</p>
         </div>
-        <Link href="/discover" className="glass-btn-primary shrink-0">
-          ✨ イベントを探しに行く
+        <Link href="/discover" className="btn btn-primary shrink-0">
+          🎲 イベントを探しに行く
         </Link>
       </header>
 
       {/* タブ（WAI-ARIA の tablist パターン） */}
-      <div role="tablist" aria-label="表示する種類" className="glass grid grid-cols-3 gap-1 rounded-[1.6rem] p-1.5 sm:rounded-full">
+      <div role="tablist" aria-label="表示する種類" className="grid grid-cols-3 gap-1 rounded-[26px] border-[2.5px] border-ink bg-white p-1.5 shadow-[4px_4px_0_var(--color-ink)] sm:rounded-full">
         {TABS.map((t) => {
           const count = hydrated ? lists[t.id].length : 0;
           const active = tab === t.id;
@@ -80,14 +81,14 @@ export function MyBoardClient({ events, isSample }: { events: Event[]; isSample:
               aria-selected={active}
               aria-controls="my-panel"
               onClick={() => setTab(t.id)}
-              className={`flex min-h-12 flex-col items-center justify-center rounded-[1.25rem] px-1 text-sm font-bold leading-tight transition duration-200 sm:flex-row sm:gap-1.5 sm:rounded-full sm:text-base ${
-                active ? "bg-brand-600 text-white shadow-md" : "text-slate-700 hover:bg-white/70"
+              className={`flex min-h-12 flex-col items-center justify-center rounded-[20px] px-1 text-sm font-extrabold leading-tight transition duration-200 sm:flex-row sm:gap-1.5 sm:rounded-full sm:text-base ${
+                active ? "border-2 border-ink bg-sun" : "hover:bg-cream"
               }`}
             >
               <span aria-hidden="true">{t.icon}</span>
               <span className="flex items-center gap-1 whitespace-nowrap">
                 {t.label}
-                <span className={`rounded-full px-1.5 text-xs tabular-nums ${active ? "bg-white/25" : "bg-slate-900/5"}`}>
+                <span className="rounded-full border-2 border-ink bg-white px-1.5 font-display text-xs tabular-nums">
                   {count}
                 </span>
               </span>
@@ -103,29 +104,37 @@ export function MyBoardClient({ events, isSample }: { events: Event[]; isSample:
           ) : current.length === 0 ? (
             <EmptyState tab={tab} hasPrefs={Boolean(prefs)} />
           ) : (
-            <ul className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {current.map((event, i) => (
-                <li
-                  key={event.id}
-                  className="animate-rise relative list-none"
-                  style={{ "--rise-delay": `${Math.min(i, 8) * 45}ms` } as CSSProperties}
-                >
-                  <div className={`relative h-full ${i % 2 ? "rotate-1" : "-rotate-1"}`}>
-                    <span aria-hidden="true" className="push-pin" />
+            <ul className="grid grid-cols-1 gap-x-6 gap-y-9 sm:grid-cols-2 lg:grid-cols-3">
+              {current.map((event, i) => {
+                const color = categoryColor(event.category);
+                return (
+                  <li
+                    key={event.id}
+                    className="flyer-hover animate-pop relative list-none"
+                    style={
+                      {
+                        "--d": `${Math.min(i, 8) * 55}ms`,
+                        "--paper": color.paper,
+                        "--pin": color.pin,
+                        "--tilt": FLYER_TILTS[i % FLYER_TILTS.length],
+                      } as CSSProperties
+                    }
+                  >
+                    <span aria-hidden="true" className="pin" />
                     <MyFlyer
                       event={event}
                       isSample={isSample}
                       isSaved={savedIds.includes(event.id)}
                       isGoing={goingIds.includes(event.id)}
                     />
-                  </div>
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ul>
           )}
         </CorkBoard>
         {tab === "favorites" && missing > 0 && (
-          <p className="mt-3 px-1 text-sm text-slate-600">※ 終了または非公開になったイベント {missing} 件は表示していません。</p>
+          <p className="mt-4 px-1 text-sm font-medium text-ink-soft">※ 終了または非公開になったイベント {missing} 件は表示していません。</p>
         )}
       </div>
     </div>
@@ -134,19 +143,19 @@ export function MyBoardClient({ events, isSample }: { events: Event[]; isSample:
 
 function MyFlyer({ event, isSample, isSaved, isGoing }: { event: Event; isSample: boolean; isSaved: boolean; isGoing: boolean }) {
   return (
-    <article className="paper relative flex h-full flex-col gap-2 rounded-sm p-5 pt-8">
+    <article className="flyer flex flex-col gap-2 p-5 pt-6">
       <div className="flex flex-wrap gap-2">
         {isSample && <Badge tone="warning">サンプル</Badge>}
-        <Badge tone="brand">{categoryLabel(event.category)}</Badge>
+        <Badge>{categoryLabel(event.category)}</Badge>
         {isGoing && <Badge tone="success">参加予定</Badge>}
       </div>
-      <h2 className="text-lg font-bold leading-snug">
-        <Link href={`/events/${event.id}`} className="text-brand-800 hover:underline">
+      <h2 className="text-lg font-extrabold leading-snug">
+        <Link href={`/events/${event.id}`} className="underline decoration-2 decoration-transparent underline-offset-4 transition hover:decoration-coral">
           {event.title}
         </Link>
       </h2>
-      <p className="text-sm text-slate-700">📅 {formatDateTimeRange(event.startAt, event.endAt)}</p>
-      <p className="text-sm text-slate-700">
+      <p className="text-sm font-medium">📅 {formatDateTimeRange(event.startAt, event.endAt)}</p>
+      <p className="text-sm font-medium">
         📍 {municipalityLabel(event.municipality)} / {event.venue}
       </p>
 
@@ -156,9 +165,8 @@ function MyFlyer({ event, isSample, isSaved, isGoing }: { event: Event; isSample
           type="button"
           onClick={() => favorites.toggle(event.id)}
           aria-pressed={isSaved}
-          className={`inline-flex min-h-11 items-center gap-1 rounded-full px-3 text-sm font-bold ring-1 transition ${
-            isSaved ? "bg-rose-50 text-rose-700 ring-rose-300" : "bg-white text-slate-700 ring-slate-300 hover:bg-slate-50"
-          }`}
+          className="btn btn-sm px-3"
+          style={{ "--btn-bg": isSaved ? "var(--color-coral)" : "#fff" } as CSSProperties}
         >
           {isSaved ? "♥ 保存済み" : "♡ 保存"}
         </button>
@@ -166,11 +174,8 @@ function MyFlyer({ event, isSample, isSaved, isGoing }: { event: Event; isSample
           type="button"
           onClick={() => going.toggle(event.id)}
           aria-pressed={isGoing}
-          className={`inline-flex min-h-11 items-center gap-1 rounded-full px-3 text-sm font-bold ring-1 transition ${
-            isGoing
-              ? "bg-emerald-50 text-emerald-800 ring-emerald-300"
-              : "bg-white text-slate-700 ring-slate-300 hover:bg-slate-50"
-          }`}
+          className="btn btn-sm px-3"
+          style={{ "--btn-bg": isGoing ? "var(--color-mint)" : "#fff" } as CSSProperties}
         >
           {isGoing ? "✅ 参加予定" : "＋ 参加予定にする"}
         </button>
@@ -189,10 +194,11 @@ function EmptyState({ tab, hasPrefs }: { tab: TabId; hasPrefs: boolean }) {
           ? "条件に合う、まだ保存していないイベントはありません。"
           : "発見モードで興味や希望条件を設定すると、おすすめが表示されます。";
   return (
-    <div className="paper mx-auto max-w-md rounded-sm px-6 py-8 text-center">
-      <p className="text-slate-700">{text}</p>
-      <Link href="/discover" className="glass-btn-primary mt-4">
-        ✨ 発見モードへ
+    <div className="flyer relative mx-auto max-w-md px-6 py-8 text-center" style={{ "--tilt": "-1deg" } as CSSProperties}>
+      <span aria-hidden="true" className="pin" />
+      <p className="font-medium">{text}</p>
+      <Link href="/discover" className="btn btn-primary mt-4">
+        🎲 発見モードへ
       </Link>
     </div>
   );

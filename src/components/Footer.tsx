@@ -9,9 +9,12 @@ import { getDictionary } from "@/lib/i18n";
 export function Footer() {
   const t = getDictionary();
   return (
-    <footer className="mt-12 px-3 pb-4 sm:px-4">
-      <div className="glass mx-auto max-w-5xl rounded-[var(--radius-lg)] px-5 py-6 text-sm text-slate-600">
-        <p className="font-semibold text-slate-800">{APP_CONFIG.name}</p>
+    <footer className="mt-14 px-4 pb-6 sm:px-6">
+      <div className="surface mx-auto max-w-6xl px-6 py-6 text-sm text-ink-soft">
+        <p className="font-extrabold text-ink">
+          <span aria-hidden="true">∞ </span>
+          {APP_CONFIG.name}
+        </p>
         <p className="mt-1">{t.common.footerNote}</p>
         <ul className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
           <li>
