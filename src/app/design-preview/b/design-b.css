@@ -1,0 +1,242 @@
+/*
+  Design B — Editorial Bulletin Board「The Shiga Bulletin」
+  地域新聞の一面 × 掲示板。明朝の見出し、圧縮サンセリフの数字、朱色の差し色。
+  すべて .dB の中に閉じ込める。
+*/
+
+/* components レイヤーに入れる：Tailwind のユーティリティ（absolute, p-6 など）で上書きできるようにするため */
+@layer components {
+
+.dB {
+  --b-paper: #f3eee3;
+  --b-paper-2: #ebe4d4;
+  --b-ink: #171513;
+  --b-ink-2: #4a453d; /* 紙の上で 8:1 */
+  --b-ink-3: #6f685c;
+  --b-red: #c8372a; /* 朱 */
+  --b-indigo: #1d3557; /* 湖の藍 */
+  --b-kraft: #c4a273;
+  --b-rule: #171513;
+  --b-ease: cubic-bezier(0.3, 0.7, 0.2, 1);
+
+  position: relative;
+  min-height: 100%;
+  color: var(--b-ink);
+  background-color: var(--b-paper);
+  /* 新聞用紙の繊維感（細かいノイズ）と、ごく淡い紙ムラ */
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.25 0 0 0 0 0.15 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    radial-gradient(80rem 50rem at 100% 0%, rgb(255 255 255 / 0.5), transparent 60%);
+  font-feature-settings: "palt";
+}
+
+.dB .b-serif {
+  font-family: var(--font-b-serif), serif;
+}
+.dB .b-cond {
+  font-family: var(--font-b-sans), sans-serif;
+  font-stretch: 75%;
+  font-variation-settings: "wdth" 75;
+}
+.dB .b-kicker {
+  font-family: var(--font-b-sans), sans-serif;
+  font-stretch: 80%;
+  font-variation-settings: "wdth" 80;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* 罫線 */
+.dB .b-rule-2 {
+  border-top: 3px solid var(--b-rule);
+  border-bottom: 1px solid var(--b-rule);
+  height: 7px;
+}
+.dB .b-rule {
+  border-top: 1px solid var(--b-rule);
+}
+.dB .b-rule-dotted {
+  border-top: 1px dotted var(--b-ink-3);
+}
+
+/* 下線が左から伸びるリンク */
+.dB .b-link {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1.5px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 350ms var(--b-ease), color 200ms;
+}
+.dB .b-link:hover,
+.dB .b-link[aria-current="page"] {
+  background-size: 100% 1.5px;
+}
+.dB .b-link[aria-current="page"] {
+  color: var(--b-red);
+}
+
+/* 見出し横の朱丸 */
+.dB .b-dot {
+  display: inline-block;
+  width: 0.32em;
+  height: 0.32em;
+  margin-left: 0.08em;
+  border-radius: 50%;
+  background: var(--b-red);
+  vertical-align: 0.1em;
+}
+
+/* 段落の頭文字（ドロップキャップ） */
+.dB .b-dropcap::first-letter {
+  float: left;
+  font-family: var(--font-b-serif), serif;
+  font-size: 3.4em;
+  line-height: 0.9;
+  font-weight: 800;
+  padding: 0.06em 0.12em 0 0;
+  color: var(--b-red);
+}
+
+/* ボタン：印刷物らしい直角と、押したときに版ずれのような影 */
+.dB .b-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  min-height: 3.25rem;
+  padding: 0 1.25rem;
+  font-weight: 700;
+  border: 1.5px solid var(--b-ink);
+  white-space: nowrap;
+  transition:
+    transform 200ms var(--b-ease),
+    box-shadow 200ms var(--b-ease),
+    background 200ms;
+}
+.dB .b-btn:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 3px 3px 0 var(--b-ink);
+}
+.dB .b-btn:active {
+  transform: none;
+  box-shadow: none;
+}
+.dB .b-btn-ink {
+  color: var(--b-paper);
+  background: var(--b-ink);
+}
+.dB .b-btn-ink:hover {
+  box-shadow: 3px 3px 0 var(--b-red);
+}
+
+/* ---------------- 掲示板（クラフト紙のボード） ---------------- */
+.dB .b-board {
+  position: relative;
+  padding: 2.25rem 1rem 1.75rem;
+  background-color: var(--b-kraft);
+  background-image:
+    radial-gradient(circle at 30% 40%, rgb(80 50 20 / 0.22) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 70% 20%, rgb(255 245 220 / 0.25) 0 1px, transparent 1.6px),
+    linear-gradient(180deg, #c9a87a, #b8935f);
+  background-size: 11px 11px, 15px 15px, 100% 100%;
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.15), inset 0 6px 16px -6px rgb(0 0 0 / 0.35);
+}
+@media (min-width: 768px) {
+  .dB .b-board {
+    padding: 3rem 2.25rem 2.5rem;
+  }
+}
+
+.dB .b-flyer {
+  position: relative;
+  height: 100%;
+  background: #fbf8f1;
+  box-shadow:
+    0 1px 0 rgb(0 0 0 / 0.08),
+    0 10px 18px -10px rgb(40 25 5 / 0.6);
+  transition:
+    transform 400ms var(--b-ease),
+    box-shadow 400ms var(--b-ease);
+}
+.dB .b-flyer-wrap:hover .b-flyer {
+  transform: rotate(0deg) translateY(-5px) !important;
+  box-shadow:
+    0 1px 0 rgb(0 0 0 / 0.08),
+    0 24px 30px -14px rgb(40 25 5 / 0.65);
+}
+/* 朱色の画鋲 */
+.dB .b-pin {
+  position: absolute;
+  top: -0.45rem;
+  left: 50%;
+  z-index: 2;
+  width: 1rem;
+  height: 1rem;
+  margin-left: -0.5rem;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffb3a8 0 14%, var(--b-red) 45%, #7d1d14 100%);
+  box-shadow: 0 3px 4px rgb(0 0 0 / 0.35);
+}
+/* マスキングテープ（一部のチラシだけに） */
+.dB .b-tape {
+  position: absolute;
+  top: -0.7rem;
+  left: 50%;
+  width: 5.5rem;
+  height: 1.4rem;
+  margin-left: -2.75rem;
+  transform: rotate(-3deg);
+  background: rgb(240 230 200 / 0.75);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.12);
+  z-index: 2;
+}
+
+/* 表（INDEX）の行：点線リーダー */
+.dB .b-leader {
+  flex: 1;
+  margin: 0 0.5rem;
+  border-bottom: 1px dotted var(--b-ink-3);
+  transform: translateY(-0.3em);
+}
+.dB .b-index-row {
+  transition: background 200ms, padding 250ms var(--b-ease);
+}
+.dB .b-index-row:hover {
+  background: rgb(200 55 42 / 0.06);
+  padding-left: 0.5rem;
+}
+
+/* 見出しの登場：下から一行ずつ */
+.dB .b-reveal {
+  animation: b-reveal 800ms var(--b-ease) backwards;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes b-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(0.4em);
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.dB :focus-visible {
+  outline: 2px solid var(--b-red);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dB *,
+  .dB *::before,
+  .dB *::after {
+    animation: none !important;
+    transition-duration: 1ms !important;
+  }
+}
+}

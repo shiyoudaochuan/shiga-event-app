@@ -1,0 +1,249 @@
+/*
+  Design C — Playful Community「Tsunagaru Park」
+  公民館の掲示板に、いろんな国の人が色とりどりの紙を貼っていく。
+  太い輪郭線 × ずらした影（ソフトな立体）× 弾むマイクロインタラクション。
+  すべて .dC の中に閉じ込める。
+*/
+
+/* components レイヤーに入れる：Tailwind のユーティリティ（absolute, p-6 など）で上書きできるようにするため */
+@layer components {
+
+.dC {
+  --c-cream: #fff7e8;
+  --c-ink: #2a2140; /* 濃いぶどう色。黒より柔らかい */
+  --c-ink-2: #574c70;
+  --c-sun: #ffc93c;
+  --c-coral: #ff6f59;
+  --c-mint: #2ec4a6;
+  --c-sky: #4f8ff7;
+  --c-grape: #8a6cff;
+  --c-pink: #ff9ec7;
+  --c-line: 2.5px solid var(--c-ink);
+  --c-r: 22px;
+  --c-pop: cubic-bezier(0.34, 1.56, 0.64, 1); /* 少し行き過ぎて戻る */
+
+  position: relative;
+  min-height: 100%;
+  color: var(--c-ink);
+  background-color: var(--c-cream);
+  /* 水玉（ドット）の地紋 */
+  background-image: radial-gradient(rgb(42 33 64 / 0.07) 1.5px, transparent 1.6px);
+  background-size: 22px 22px;
+  overflow: clip;
+}
+
+.dC .c-round {
+  font-family: var(--font-c-latin), var(--font-c-jp), sans-serif;
+}
+
+/* 背景に散らばる形 */
+.dC .c-shape {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ---------------- 立体カード ---------------- */
+.dC .c-card {
+  position: relative;
+  background: #fff;
+  border: var(--c-line);
+  border-radius: var(--c-r);
+  box-shadow: 6px 6px 0 var(--c-shadow, var(--c-ink));
+  transition:
+    transform 260ms var(--c-pop),
+    box-shadow 260ms var(--c-pop);
+}
+.dC a.c-card:hover,
+.dC .c-card-hover:hover {
+  transform: translate(-3px, -3px) rotate(var(--c-hover-rot, -0.6deg));
+  box-shadow: 10px 10px 0 var(--c-shadow, var(--c-ink));
+}
+.dC a.c-card:active {
+  transform: translate(3px, 3px);
+  box-shadow: 2px 2px 0 var(--c-shadow, var(--c-ink));
+}
+
+/* ---------------- ボタン ---------------- */
+.dC .c-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3.25rem;
+  padding: 0 1.5rem;
+  border: var(--c-line);
+  border-radius: 999px;
+  font-weight: 800;
+  white-space: nowrap;
+  color: var(--c-ink);
+  background: var(--c-bg, #fff);
+  box-shadow: 4px 4px 0 var(--c-ink);
+  transition:
+    transform 220ms var(--c-pop),
+    box-shadow 220ms var(--c-pop);
+}
+.dC .c-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--c-ink);
+}
+.dC .c-btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 var(--c-ink);
+}
+
+/* あいさつのシール：ホバーでぷるっと揺れる */
+.dC .c-sticker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.85rem;
+  border: 2px solid var(--c-ink);
+  border-radius: 999px;
+  font-weight: 700;
+  background: var(--c-bg, #fff);
+  transform: rotate(var(--r, 0deg));
+}
+.dC .c-sticker:hover {
+  animation: c-wiggle 500ms ease-in-out;
+}
+@keyframes c-wiggle {
+  0%,
+  100% {
+    transform: rotate(var(--r, 0deg));
+  }
+  25% {
+    transform: rotate(calc(var(--r, 0deg) - 6deg)) scale(1.06);
+  }
+  60% {
+    transform: rotate(calc(var(--r, 0deg) + 4deg)) scale(1.06);
+  }
+}
+
+/* 蛍光ペンの下線 */
+.dC .c-marker {
+  background: linear-gradient(transparent 58%, var(--c-sun) 58%, var(--c-sun) 92%, transparent 92%);
+  padding: 0 0.1em;
+}
+
+/* ---------------- 掲示板 ---------------- */
+.dC .c-board {
+  position: relative;
+  padding: 2.4rem 1rem 1.8rem;
+  border: 3px solid var(--c-ink);
+  border-radius: 32px;
+  background-color: #d9a86a;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgb(110 60 20 / 0.3) 0 1.2px, transparent 2px),
+    radial-gradient(circle at 70% 70%, rgb(255 240 210 / 0.3) 0 1px, transparent 1.8px);
+  background-size: 14px 14px, 19px 19px;
+  box-shadow:
+    inset 0 0 0 10px #f2c38a,
+    inset 0 0 0 12.5px var(--c-ink),
+    8px 8px 0 var(--c-ink);
+}
+@media (min-width: 768px) {
+  .dC .c-board {
+    padding: 3rem 2.25rem 2.4rem;
+  }
+}
+
+.dC .c-flyer {
+  position: relative;
+  height: 100%;
+  border: var(--c-line);
+  border-radius: 14px;
+  background: var(--c-paper, #fff);
+  box-shadow: 4px 4px 0 rgb(42 33 64 / 0.85);
+  transition:
+    transform 300ms var(--c-pop),
+    box-shadow 300ms var(--c-pop);
+}
+.dC .c-flyer-wrap:hover .c-flyer {
+  transform: rotate(0deg) translateY(-6px) scale(1.02) !important;
+  box-shadow: 8px 10px 0 rgb(42 33 64 / 0.85);
+}
+/* 色とりどりの画鋲（ホバーで軽く跳ねる） */
+.dC .c-pin {
+  position: absolute;
+  top: -0.65rem;
+  left: 50%;
+  z-index: 2;
+  width: 1.3rem;
+  height: 1.3rem;
+  margin-left: -0.65rem;
+  border: 2.5px solid var(--c-ink);
+  border-radius: 50%;
+  background: var(--c-pin, var(--c-coral));
+  box-shadow: inset -3px -3px 0 rgb(0 0 0 / 0.18), inset 2px 2px 0 rgb(255 255 255 / 0.55);
+  transition: transform 300ms var(--c-pop);
+}
+.dC .c-flyer-wrap:hover .c-pin {
+  transform: translateY(-4px) scale(1.12);
+}
+
+/* 発見カードの丸ボタン */
+.dC .c-fab {
+  display: grid;
+  place-items: center;
+  width: 4.25rem;
+  height: 4.25rem;
+  border: 3px solid var(--c-ink);
+  border-radius: 50%;
+  font-size: 1.6rem;
+  font-weight: 900;
+  background: var(--c-bg, #fff);
+  box-shadow: 4px 4px 0 var(--c-ink);
+  transition:
+    transform 240ms var(--c-pop),
+    box-shadow 240ms var(--c-pop);
+}
+.dC .c-fab:hover {
+  transform: translate(-2px, -3px) rotate(-8deg) scale(1.06);
+  box-shadow: 6px 7px 0 var(--c-ink);
+}
+.dC .c-fab:active {
+  transform: translate(3px, 3px) scale(0.96);
+  box-shadow: 1px 1px 0 var(--c-ink);
+}
+
+/* 登場：ぽよん */
+.dC .c-pop {
+  animation: c-pop 650ms var(--c-pop) backwards; /* both だと終了後も transform を固定してホバーが効かない */
+  animation-delay: var(--d, 0ms);
+}
+@keyframes c-pop {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ふわふわ浮かぶ */
+.dC .c-float {
+  animation: c-float 6s ease-in-out infinite alternate;
+}
+@keyframes c-float {
+  to {
+    transform: translateY(-14px) rotate(8deg);
+  }
+}
+
+.dC :focus-visible {
+  outline: 3px solid var(--c-sky);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dC *,
+  .dC *::before,
+  .dC *::after {
+    animation: none !important;
+    transition-duration: 1ms !important;
+  }
+}
+}
